@@ -1,0 +1,155 @@
+@page "/r_clients"
+@inject ClientBLL ClientBLL
+@inject NotificationService notify
+
+<EditForm Model="client" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+
+    <div class='card'>
+        <div class='card-header'>
+            <h3>Registro de clientes</h3>
+        </div>
+        <div class='card-body'>
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>ClienteId</label>
+                    <div id="search-id">
+                        <InputNumber @bind-Value='client.ClientId' class='form-control'></InputNumber>
+                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                    </div>
+                    <ValidationMessage For="@(() => client.ClientId)" />
+                </div>
+                <div class='col-md-6'>
+                    <label>Fecha de ingreso</label>
+                    <InputDate @bind-Value='client.RegisterDate' class='form-control'></InputDate>
+                    <ValidationMessage For="@(() => client.RegisterDate)" />
+                </div>
+            </div> @*End of the row*@
+            @* Cedula *@
+            <label>Número de identificación</label>
+            <InputText @bind-Value='client.IdentificationNumber' class='form-control'></InputText>
+            <ValidationMessage For="@(() => client.IdentificationNumber)" />
+            @* Client Name *@
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Nombre</label>
+                    <InputText @bind-Value='client.Name' class='form-control'></InputText>
+                </div>
+                    <ValidationMessage For="@(() => client.Name)" />
+                <div class='col-md-6'>
+                    <label>Apellido</label>
+                    <InputText @bind-Value='client.LastName' class='form-control'></InputText>
+                </div>
+                    <ValidationMessage For="@(() => client.LastName)" />
+            </div>
+            @* Address *@
+            <label>Dirección</label>
+            <InputText @bind-Value='client.Address' class='form-control'></InputText>
+            <ValidationMessage For="@(() => client.Address)" />
+            @* Telephone *@
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Teléfono</label>
+                    <InputText @bind-Value='client.Telephone' class='form-control'></InputText>
+                </div>
+                    <ValidationMessage For="@(() => client.Telephone)" />
+                <div class='col-md-6'>
+                    <label>Email</label>
+                    <InputText @bind-Value='client.Email' class='form-control'></InputText>
+                </div>
+                    <ValidationMessage For="@(() => client.Email)" />
+            </div>
+            
+        </div> @*End of the CARD-BODY*@
+        <div class='card-footer'>
+            <button type='button' class='btn btn-primary'@onclick='New'><span class="oi oi-plus"/> Nuevo </button>
+            <button type='submit' class='btn btn-success'><span class="oi oi-check"/> Guardar </button>
+            <button type='button' class='btn btn-danger'@onclick='Delete'><span class="oi oi-delete"/> Eliminar </button>
+        </div>
+    </div>
+</EditForm>
+@code 
+{
+    public Client client { get; set; } = new Client();
+
+    void Search()
+    {
+        var clientFound = ClientBLL.Search(client.ClientId);
+        if(clientFound != null)
+        {
+            client = clientFound;
+            notify.DataFound();
+        }
+        else
+        {
+            notify.NotFound();
+        }
+    }
+    void Save()
+    {
+        if(!Validate())
+        {
+            return;
+        }
+        if(ClientBLL.Save(client))
+        {
+            notify.Saved();
+            New();
+        }
+        else
+        {
+            notify.Wrong("No se han podido guardar los datos... intentelo mas tarde.");
+        }
+    }
+    void New()
+    {
+        client = new Client();
+    }
+    void Delete()
+    {
+        if(ClientBLL.Delete(client))
+        {
+            New();
+            notify.Success("Eliminado", "Se ha eliminado correctamente.");
+        }
+        else
+        {
+            notify.Wrong("No se ha podido eliminar este cliente.");
+        }
+    }
+    bool Validate()
+    {
+        if(client.ClientId < 0)
+        {
+            notify.Wrong("El id no puede ser menor que cero.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.Name))
+        {
+            notify.Wrong("Debe llenar el campo NOMBRE");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.Address))
+        {
+            notify.Wrong("Debe llenar el campo DIRECCIÓN");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.Telephone))
+        {
+            notify.Wrong("Debe llenar el campo TELÉFONO");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.LastName))
+        {
+            notify.Wrong("Debe llenar el campo APELLIDO");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.Email))
+        {
+            notify.Wrong("Debe llenar el campo EMAIL");
+            return false;
+        }
+        else
+            return true;
+    }
+}
