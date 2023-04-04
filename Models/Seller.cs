@@ -10,7 +10,8 @@ public class Seller
     [StringLength(100, MinimumLength = 2, ErrorMessage = "El APELLIDO es demasiado corto, Debe tener al menos {2} dígitos")]
     public string LastName { get; set; } = string.Empty;
     [Required(ErrorMessage = "El número de identificación es obligatorio.")]
-    public int IdentificationNumber { get; set; }
+    [RegularExpression("^[0-9]*$", ErrorMessage = "El número de identificación debe contener solo numeros.")]
+    public string IdentificationNumber { get; set; } = string.Empty;
     [Required(ErrorMessage = "La DIRECCIÓN es obligatorio.")]
     [StringLength(500, MinimumLength = 5, ErrorMessage = "Debe introducir una direccion real.")]
     public string Address { get; set; } = string.Empty;
