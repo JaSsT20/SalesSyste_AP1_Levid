@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using SalesSystem_AP1_Levid.Areas.Identity;
+using Radzen;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,11 @@ builder.Services.AddScoped<SaleBLL>();
 builder.Services.AddScoped<ProductsBLL>();
 builder.Services.AddScoped<ClientBLL>();
 builder.Services.AddScoped<SellerBLL>();
-
+//Adding Radzen
+builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<TooltipService>();
+builder.Services.AddScoped<ContextMenuService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
