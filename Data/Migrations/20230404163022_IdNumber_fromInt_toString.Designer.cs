@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SalesSystem_AP1_Levid.Data;
 
@@ -10,9 +11,11 @@ using SalesSystem_AP1_Levid.Data;
 namespace SalesSystem_AP1_Levid.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404163022_IdNumber_fromInt_toString")]
+    partial class IdNumber_fromInt_toString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.3");
@@ -351,9 +354,8 @@ namespace SalesSystem_AP1_Levid.Data.Migrations
                     b.Property<DateTime>("EntryDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("IdentificationNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("IdentificationNumber")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
