@@ -1,0 +1,115 @@
+@page "/r_products"
+@inject ProductsBLL ProductsBLL
+@inject NotificationService notify
+
+<EditForm Model="product" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <div class='card'>
+        @* Header *@
+        <div class='card-header'>
+            <h3>Registro de productos</h3>
+        </div>
+        @* Body *@
+        <div class='card-body'>
+            @* BeginRow *@
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Producto Id</label>
+                    <div id="search-id">
+                        <InputNumber @bind-Value='product.ProductId' class='form-control'></InputNumber>
+                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                    </div>
+                </div>
+                <div class='col-md-6'>
+                    <label>Fecha de ingreso</label>
+                    <InputDate @bind-Value='product.EntryDate' class='form-control'></InputDate>
+                </div>    
+            </div>@* EndRow *@
+            @* Descripcion del producto *@
+            <label>Descripción</label>
+            <InputText @bind-Value='product.Description' class='form-control'></InputText>
+            <ValidationMessage For="@(() => product.Description)" />
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Precio</label>
+                    <InputNumber @bind-Value='product.Price' class='form-control'></InputNumber>
+                    <ValidationMessage For="@(() => product.Price)" />
+                </div>
+                <div class='col-md-6'>
+                    <label>Existencia</label>
+                    <InputNumber @bind-Value='product.Existence' class='form-control'></InputNumber>
+                    <ValidationMessage For="@(() => product.Existence)" />
+                </div>
+            </div>
+        </div> @*End BODY*@
+        @* Footer *@
+        <div class='card-footer'>
+            <button type='button' class='btn btn-primary' @onclick='New'> Nuevo </button>
+            <button type='submit' class='btn btn-success'> Guardar </button>
+            <button type='button' class='btn btn-danger'@onclick='Delete'> Eliminar </button>
+        </div>
+    </div>
+    <ValidationSummary/>
+</EditForm>
+
+@code{
+    public Product product { get; set; } = new Product();
+    void Search()
+    {
+        var productFound = ProductsBLL.Search(product.ProductId);
+        if(productFound != null)
+        {
+            product = productFound;
+            notify.DataFound();
+        }
+        else
+        {
+            New();
+            notify.NotFound();
+        }
+    }
+    void Save()
+    {
+        if(!Validate())
+        {
+            notify.Wrong("Se han dejado campos vacios, por favor complete.");
+            return;
+        }
+        if(ProductsBLL.Save(product))
+        {
+            New();
+            notify.Saved();
+        }
+        else
+        {
+            notify.Wrong("No se han podido guardar los cambios...");
+        }
+    }
+    void New()
+    {
+        product = new Product();
+    }
+    void Delete()
+    {
+        if(ProductsBLL.Delete(product))
+        {
+            New();
+            notify.Success("Eliminado", "Se ha eliminado correctamente.");
+        }
+        else
+        {
+            notify.Wrong("No se ha podido eliminar este producto.");
+        }
+    }
+    bool Validate()
+    {
+        if(string.IsNullOrEmpty(product.Description))
+            return false;
+        if(product.Existence <= 0)
+            return false;
+        if(product.Price <= 0)
+            return false;
+        else
+            return true;
+    }
+}
