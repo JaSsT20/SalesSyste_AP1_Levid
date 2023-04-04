@@ -1,13 +1,15 @@
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using SalesSystem_AP1_Levid.Data;
+global using Microsoft.EntityFrameworkCore;
+global using System.Linq.Expressions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.EntityFrameworkCore;
 using SalesSystem_AP1_Levid.Areas.Identity;
-using SalesSystem_AP1_Levid.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
+//Scope to BLL
+builder.Services.AddScoped<SaleBLL>();
+builder.Services.AddScoped<ProductsBLL>();
+builder.Services.AddScoped<ClientBLL>();
+builder.Services.AddScoped<SellerBLL>();
 
 var app = builder.Build();
 
