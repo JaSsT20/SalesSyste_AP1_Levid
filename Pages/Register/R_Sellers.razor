@@ -1,0 +1,148 @@
+@page "/r_sellers"
+@inject NotificationService notify
+@inject SellerBLL SellerBLL
+
+<EditForm Model="seller" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+
+    <div class='card'>
+        <div class='card-header'>
+            <h3>Registro de vendedores</h3>
+        </div>
+    
+        <div class='card-body'>
+            <div class='row'>
+                <div class='col-md-6'>
+                    @* Vendedor ID *@
+                    <label>VendedorId</label>
+                    <div id="search-id">
+                        <InputNumber @bind-Value='seller.SellerId' class='form-control'></InputNumber>
+                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                    </div>
+                </div>
+                <div class='col-md-6'>
+                    <label>Fecha de entrada</label>
+                    <InputDate @bind-Value='seller.EntryDate' class='form-control'></InputDate>
+                </div>
+            </div>
+            <ValidationMessage For="@(() => seller.SellerId)" />
+            @* Cedula *@
+            <label>Número de identificación</label>
+            <InputText @bind-Value='seller.IdentificationNumber' class='form-control'  placeholder="EJ:05500000001"></InputText>
+            <ValidationMessage For="@(() => seller.IdentificationNumber)" />
+            <div class='row'>
+                <div class='col-md-6'>
+                    <label>Nombre</label>
+                    <InputText @bind-Value='seller.Name' class='form-control'></InputText>
+                    <ValidationMessage For="@(() => seller.Name)" />
+                </div>
+                <div class='col-md-6'>
+                    <label>Apellido</label>
+                    <InputText @bind-Value='seller.LastName' class='form-control'></InputText>
+                    <ValidationMessage For="@(() => seller.LastName)" />
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-8'>
+                    <label>Dirección</label>
+                    <InputText @bind-Value='seller.Address' class='form-control'></InputText>    
+                    <ValidationMessage For="@(() => seller.Address)" />
+                </div>
+                <div class='col-md-4'>
+                    <label>Teléfono</label>
+                    <InputText @bind-Value='seller.Telephone' class='form-control' placeholder="EJ:8095770000"></InputText>
+                    <ValidationMessage For="@(() => seller.Telephone)" />
+                </div>
+            </div>
+            
+            
+        </div> @*END OF THE CARD BODY*@
+    
+        <div class='card-footer'>
+            <button type='button' class='btn btn-primary' @onclick='New'> Nuevo </button>
+            <button type='submit' class='btn btn-success'> Guardar </button>
+            <button type='button' class='btn btn-danger'@onclick='Delete'> Eliminar </button>
+        </div>
+    </div>
+    
+</EditForm>
+
+@code{
+    public Seller seller { get; set; } = new Seller();
+
+        void Search()
+    {
+        var sellerFound = SellerBLL.Search(seller.SellerId);
+        if(sellerFound != null)
+        {
+            seller = sellerFound;
+            notify.DataFound();
+        }
+        else
+        {
+            notify.NotFound();
+        }
+    }
+    void Save()
+    {
+        if(!Validate())
+        {
+            return;
+        }
+        if(SellerBLL.Save(seller))
+        {
+            notify.Saved();
+            New();
+        }
+        else
+        {
+            notify.Wrong("No se han podido guardar los datos... intentelo mas tarde.");
+        }
+    }
+    void New()
+    {
+        seller = new Seller();
+    }
+    void Delete()
+    {
+        if(SellerBLL.Delete(seller))
+        {
+            New();
+            notify.Success("Eliminado", "Se ha eliminado correctamente.");
+        }
+        else
+        {
+            notify.Wrong("No se ha podido eliminar este vendedor.");
+        }
+    }
+    bool Validate()
+    {
+        if(seller.SellerId < 0)
+        {
+            notify.Wrong("El id no puede ser menor que cero.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(seller.Name))
+        {
+            notify.Wrong("Debe llenar el campo NOMBRE");
+            return false;
+        }
+        if(string.IsNullOrEmpty(seller.Telephone))
+        {
+            notify.Wrong("Debe llenar el campo TELÉFONO");
+            return false;
+        }
+        if(string.IsNullOrEmpty(seller.Address))
+        {
+            notify.Wrong("Debe llenar el campo DIRECCIÓN");
+            return false;
+        }
+        if(string.IsNullOrEmpty(seller.LastName))
+        {
+            notify.Wrong("Debe llenar el campo APELLIDO");
+            return false;
+        }
+        else
+            return true;
+    }
+}
