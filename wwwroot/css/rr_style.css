@@ -1,0 +1,23 @@
+.card{
+    width: 500px;
+}
+
+#search-id{
+    display: flex;
+}
+#search-id input{
+    width: 100px;
+}
+#search-id #date{
+    margin-left: 102px;
+    width: 150px;
+}
+#datelbl{
+    margin-left: 185px;
+}
+#search-id-consult{
+    display: flex;
+}
+.price{
+    color: green;
+}
