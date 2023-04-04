@@ -17,7 +17,7 @@
                         <InputNumber @bind-Value='client.ClientId' class='form-control'></InputNumber>
                         <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
                     </div>
-                    <ValidationMessage For="@(() => client.ClientId)" />
+                        <ValidationMessage For="@(() => client.ClientId)" />
                 </div>
                 <div class='col-md-6'>
                     <label>Fecha de ingreso</label>
@@ -34,13 +34,13 @@
                 <div class='col-md-6'>
                     <label>Nombre</label>
                     <InputText @bind-Value='client.Name' class='form-control'></InputText>
-                </div>
                     <ValidationMessage For="@(() => client.Name)" />
+                </div>
                 <div class='col-md-6'>
                     <label>Apellido</label>
                     <InputText @bind-Value='client.LastName' class='form-control'></InputText>
-                </div>
                     <ValidationMessage For="@(() => client.LastName)" />
+                </div>
             </div>
             @* Address *@
             <label>Dirección</label>
@@ -51,13 +51,13 @@
                 <div class='col-md-6'>
                     <label>Teléfono</label>
                     <InputText @bind-Value='client.Telephone' class='form-control'></InputText>
-                </div>
                     <ValidationMessage For="@(() => client.Telephone)" />
+                </div>
                 <div class='col-md-6'>
                     <label>Email</label>
                     <InputText @bind-Value='client.Email' class='form-control'></InputText>
-                </div>
                     <ValidationMessage For="@(() => client.Email)" />
+                </div>
             </div>
             
         </div> @*End of the CARD-BODY*@
