@@ -27,7 +27,7 @@
             </div> @*End of the row*@
             @* Cedula *@
             <label>Número de identificación</label>
-            <InputText @bind-Value='client.IdentificationNumber' class='form-control'></InputText>
+            <InputText @bind-Value='client.IdentificationNumber' class='form-control' placeholder="EJ:05500000001"></InputText>
             <ValidationMessage For="@(() => client.IdentificationNumber)" />
             @* Client Name *@
             <div class='row'>
@@ -50,12 +50,12 @@
             <div class='row'>
                 <div class='col-md-6'>
                     <label>Teléfono</label>
-                    <InputText @bind-Value='client.Telephone' class='form-control'></InputText>
+                    <InputText @bind-Value='client.Telephone' class='form-control' placeholder="EJ:8095008090"></InputText>
                     <ValidationMessage For="@(() => client.Telephone)" />
                 </div>
                 <div class='col-md-6'>
                     <label>Email</label>
-                    <InputText @bind-Value='client.Email' class='form-control'></InputText>
+                    <InputText @bind-Value='client.Email' class='form-control' placeholder="EJ:usuario@dominio.com"></InputText>
                     <ValidationMessage For="@(() => client.Email)" />
                 </div>
             </div>
