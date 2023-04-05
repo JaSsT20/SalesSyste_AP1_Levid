@@ -2,8 +2,13 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<AuthorizeView>
+    <Authorized>
+        <h1>¡Bienvenido!</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h4>Hola, debes <a href="Identity/Account/Login">INICIAR SESIÓN</a> para acceder a todas las funcionalidades.</h4>
+        <label>Si aún no estas registrado, <a href="Identity/Account/Register">da click aqui para REGISTRARTE.</a></label>
+    </NotAuthorized>
+</AuthorizeView>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
