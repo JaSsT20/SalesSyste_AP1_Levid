@@ -21,3 +21,6 @@
 .price{
     color: green;
 }
+.finalDate{
+    display: flex;
+}
