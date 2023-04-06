@@ -22,13 +22,13 @@
         <div class='col-md-4'>
             <label>Filtro</label>
             <div class="filter-box">
-                <select class="form-control" @bind="option">
+                <InputSelect class="form-control" @bind-Value="option">
                     <option value=0>Sin filtro</option>
                     <option value=1>Producto ID</option>
                     <option value=2>Descripción</option>
                     <option value=3>Precio</option>
                     <option value=4>Existencia</option>
-                </select>
+                </InputSelect>
                 <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="RestartFilter"></button>
             </div>
         </div>
@@ -36,17 +36,20 @@
         @* Criterio *@
             @if(option == 3 || option == 4)
             {
-                <div class="row">
-                    <div class="col-md-4">
+                <div class='row'>
+                    <div class='col-md-4'>
                         <label>Valor Mínimo</label>
                         <InputText @bind-Value="Min" class="form-control"></InputText>
                     </div>
-                    <div class="col-md-4">
+                    <div class='col-md-4'>
                         <label>Valor Máximo</label>
-                        <InputText @bind-Value="Max" class="form-control"></InputText>
-                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filter"></button>
+                        <div id="c_search">
+                            <InputText @bind-Value="Max" class="form-control"></InputText>
+                            <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filter"></button>
+                        </div>
                     </div>
                 </div>
+                
             }
             else
             {
@@ -191,6 +194,11 @@
             if(minPrice >= 0 && maxPrice == 0)
             {
                 Results = ProductsBLL.GetList(item => item.Price >= minPrice && item.Price <= float.MaxValue
+                && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+            }
+            else if(minPrice <= 0 && maxPrice >=0)
+            {
+                Results = ProductsBLL.GetList(item => item.Price >= 0 && item.Price <= maxPrice
                 && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
             }
             else

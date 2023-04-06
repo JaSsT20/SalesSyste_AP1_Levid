@@ -27,3 +27,6 @@
 .filter-box select{
     width: 250px;
 }
+#c_search{
+    display: flex;
+}
