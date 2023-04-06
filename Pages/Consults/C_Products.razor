@@ -145,7 +145,7 @@
     {
         if(Validate())
         {
-            Results = ProductsBLL.GetList(item => item.Description == criterion
+            Results = ProductsBLL.GetList(item => item.Description.ToLower() == criterion.ToLower()
             && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
         }
     }
@@ -166,9 +166,12 @@
     }
     void ResetDate()
     {
-        InitialDate = GetOldestProduct().EntryDate;
-        FinalDate = GetYoungestProduct().EntryDate;
-        message.Info("Fecha restaurada", "Se han puesto los valores por defecto de la fecha.");
+        if(!(InitialDate == GetOldestProduct().EntryDate && FinalDate == GetYoungestProduct().EntryDate))
+        {
+            InitialDate = GetOldestProduct().EntryDate;
+            FinalDate = GetYoungestProduct().EntryDate;
+            message.Info("Fecha restaurada", "Se han puesto los valores por defecto de la fecha.");
+        }
     }
     Product GetOldestProduct()
     {
