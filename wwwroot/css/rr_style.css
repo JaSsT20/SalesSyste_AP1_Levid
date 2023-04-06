@@ -15,12 +15,15 @@
 #datelbl{
     margin-left: 185px;
 }
-#search-id-consult{
-    display: flex;
-}
 .price{
     color: green;
 }
 .finalDate{
     display: flex;
+}
+.filter-box{
+    display: flex;
+}
+.filter-box select{
+    width: 250px;
 }
