@@ -9,9 +9,14 @@ h1:focus {
 }
 
 a, .btn-link {
-    color: #0071c1;
+    color: #ffffff;
 }
-
+.btn-link:hover{
+    color: red;
+}
+.userTag, a:hover{
+    color: #258cfb;
+}
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
