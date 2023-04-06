@@ -214,10 +214,41 @@
     }
     void SearchByExistence()
     {
-        int existence = 0;
-        if (int.TryParse(criterion, out existence))
-            Results = ProductsBLL.GetList(item => item.Existence == existence
-            && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+        float minValue = 0, maxValue = 0;
+        if(!string.IsNullOrEmpty(Min) && string.IsNullOrEmpty(Max))
+        {
+            float.TryParse(Min, out minValue);
+            Max = "0";
+            float.TryParse(Max, out maxValue);
+        }
+        if(string.IsNullOrEmpty(Min) && !string.IsNullOrEmpty(Max))
+        {
+            float.TryParse(Max, out maxValue);
+            Min = "0";
+            float.TryParse(Min, out minValue);
+        }
+        if (float.TryParse(Min, out minValue) && float.TryParse(Max, out maxValue))
+        {
+            if(minValue >= 0 && maxValue == 0)
+            {
+                Results = ProductsBLL.GetList(item => item.Existence >= minValue && item.Existence <= float.MaxValue
+                && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+            }
+            else if(minValue <= 0 && maxValue >=0)
+            {
+                Results = ProductsBLL.GetList(item => item.Existence >= 0 && item.Existence <= maxValue
+                && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+            }
+            else
+            {
+                Results = ProductsBLL.GetList(item => item.Existence >= minValue && item.Existence <= maxValue
+                && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+            }
+        }
+        else
+        {
+            message.Wrong("Se han proporcionado valores no numéricos para trabajar.");
+        }
     }
     bool Validate()
     {
