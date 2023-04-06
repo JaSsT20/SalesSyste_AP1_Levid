@@ -1,14 +1,18 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Sales system</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <h1>¡Bienvenido!</h1>
+
+        <IndexAuthorized/>
+
     </Authorized>
     <NotAuthorized>
-        <h4>Hola, debes <a href="Identity/Account/Login">INICIAR SESIÓN</a> para acceder a todas las funcionalidades.</h4>
-        <label>Si aún no estas registrado, <a href="Identity/Account/Register">da click aqui para REGISTRARTE.</a></label>
+
+        <IndexNoAuthorized/>
+
     </NotAuthorized>
 </AuthorizeView>
+
 
