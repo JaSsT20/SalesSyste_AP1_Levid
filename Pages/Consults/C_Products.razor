@@ -1,0 +1,170 @@
+@page "/c_products"
+@inject ProductsBLL ProductsBLL
+@inject NotificationService message
+
+<div class="card-header">
+    <h2>Consulta de productos</h2>
+    <div class='row'>
+        <div class='col-md-3'>
+            <label>Fecha incial</label>
+            <InputDate @bind-Value="InitialDate" class="form-control"></InputDate>
+        </div>
+        <div class='col-md-3'>
+            <label>Fecha límite</label>
+            <div class="finalDate">
+                <InputDate @bind-Value="FinalDate" class="form-control"></InputDate>
+                <button type="button" class="btn btn-info oi oi-delete" @onclick="ResetDate"></button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class='row'>
+        @* Filtro *@
+        <div class='col-md-6'>
+            <label>Filtro</label>  
+            <select class="form-control" @bind="option">
+                <option value=0>Sin filtro</option>
+                <option value=1>Producto ID</option>
+                <option value=2>Fecha</option>
+                <option value=3>Descripción</option>
+            </select>
+        </div>
+        <div class='col-md-6'>
+        @* Criterio *@
+            <label>Criterio</label>
+            <div id="search-id-consult">
+                <input id="c_search" type="text" class="form-control" @bind="criterion" disabled="@activeCriterion"/>
+                <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filtrar"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Existencia</th>
+                <th>Fecha de entrada</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var product in Results)
+            {
+                <tr>
+                    <td>@product.ProductId</td>
+                    <td>@product.Description</td>
+                    <td class="price">$@product.Price</td>
+                    <td>@product.Existence</td>
+                    <td>@product.EntryDate.ToString("dd/MM/yyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public int option { get; set;}
+    public List<Product> Results { get; set; } = new List<Product>();
+    public bool activeCriterion {get {return option == 0;}}
+    public string criterion {get; set;} = string.Empty;
+    public DateTime InitialDate { get; set; } = DateTime.Today;
+    public DateTime FinalDate { get; set; } = DateTime.Today.AddDays(1);
+    protected override void OnInitialized()
+    {
+        Results  = ProductsBLL.GetList(item => true);
+    }
+    private void Filtrar()
+    {
+        
+        switch (option)
+        {
+            case 0:
+            {
+                MostrarTodo();
+                SearchByDateRange();
+                break;
+            }               
+            case 1:
+            {
+                BuscarPorId();
+                break;
+            }
+            case 2:
+            {
+                BuscarPorFecha();
+                break;
+            }
+            case 3:
+            {
+                SearchByDescription();
+                break;
+            }
+        }
+        if (Results.Any() == false)
+            message.ShowNotification("Oops!","Parece que no se han encontrado resultados.", NotificationSeverity.Warning);
+    }
+    void BuscarPorId()
+    {
+        int searchId = 0;
+        if (int.TryParse(criterion, out searchId))
+        {
+            Results = ProductsBLL.GetList(item => item.ProductId == searchId);
+        }
+        else
+        {
+            message.ShowNotification("Valor inválido","El criterio de busqueda debe ser un entero. EJ: 1", NotificationSeverity.Error);
+            return;
+        }
+    }
+    void BuscarPorFecha()
+    {
+        if (DateTime.TryParse(criterion, out DateTime searchDate))
+            Results = ProductsBLL.GetList(item => item.EntryDate == searchDate);
+        else
+            message.ShowNotification("Fecha inválida","Debe colocar una fecha válida, EJ: 20/02/23", NotificationSeverity.Error);
+    }
+    void MostrarTodo()
+    {
+        Results = ProductsBLL.GetList(item => true);
+        criterion = string.Empty;
+    }
+    void SearchByDateRange()
+    {
+        if(Validate())
+            Results = ProductsBLL.GetList(item => item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+    }
+    void SearchByDescription()
+    {
+        if(Validate())
+        {
+            Results = ProductsBLL.GetList(item => item.Description == criterion
+            && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
+        }
+    }
+    bool Validate()
+    {
+        if(InitialDate > FinalDate)
+        {
+            message.Wrong("La fehca inicial no puede ser mayor que la fecha límite.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(criterion) && option != 0)
+        {
+            message.Wrong("Debe colocar un criterio de búsqueda válido.");
+            return false;
+        }
+        else
+            return true;
+    }
+    void ResetDate()
+    {
+        InitialDate = DateTime.Today;
+        FinalDate = DateTime.Today.AddDays(1);
+    }
+}
