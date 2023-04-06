@@ -13,7 +13,7 @@
             <label>Fecha límite</label>
             <div class="finalDate">
                 <InputDate @bind-Value="FinalDate" class="form-control"></InputDate>
-                <button type="button" class="btn btn-info oi oi-delete" @onclick="ResetDate"></button>
+                <button type="button" class="btn btn-info oi oi-reload" @onclick="ResetDate"></button>
             </div>
         </div>
     </div>
@@ -73,11 +73,13 @@
     public List<Product> Results { get; set; } = new List<Product>();
     public bool activeCriterion {get {return option == 0;}}
     public string criterion {get; set;} = string.Empty;
-    public DateTime InitialDate { get; set; } = DateTime.Today;
-    public DateTime FinalDate { get; set; } = DateTime.Today.AddDays(1);
+    public DateTime InitialDate { get; set; }
+    public DateTime FinalDate { get; set; }
     protected override void OnInitialized()
     {
         Results  = ProductsBLL.GetList(item => true);
+        InitialDate = GetOldestProduct().EntryDate;
+        FinalDate = GetYoungestProduct().EntryDate;
     }
     private void Filtrar()
     {
@@ -164,7 +166,40 @@
     }
     void ResetDate()
     {
-        InitialDate = DateTime.Today;
-        FinalDate = DateTime.Today.AddDays(1);
+        InitialDate = GetOldestProduct().EntryDate;
+        FinalDate = GetYoungestProduct().EntryDate;
+        message.Info("Fecha restaurada", "Se han puesto los valores por defecto de la fecha.");
+    }
+    Product GetOldestProduct()
+    {
+        List<Product> productList = ProductsBLL.GetList(item => true);
+        Product oldestProduct = productList[0];
+        if(productList != null)
+        {
+            foreach (var item in productList)
+            {
+                if(oldestProduct.EntryDate > item.EntryDate)
+                {
+                    oldestProduct = item;
+                }
+            }
+        }
+        return oldestProduct;
+    }
+    Product GetYoungestProduct()
+    {
+        List<Product> productList = ProductsBLL.GetList(item => true);
+        Product youngestProduct = productList[0];
+        if(productList != null)
+        {
+            foreach (var item in productList)
+            {
+                if(youngestProduct.EntryDate <= item.EntryDate)
+                {
+                    youngestProduct = item;
+                }
+            }
+        }
+        return youngestProduct;
     }
 }
