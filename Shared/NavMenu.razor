@@ -1,4 +1,6 @@
-﻿        <div class="top-row ps-3 navbar navbar-dark">
+﻿<AuthorizeView>
+    <Authorized>
+        <div class="top-row ps-3 navbar navbar-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="">SalesSystem</a>
                 <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -6,8 +8,6 @@
                 </button>
             </div>
         </div>
-<AuthorizeView>
-    <Authorized>
         <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
         <nav class="flex-column">
             <div class="nav-item px-3">
