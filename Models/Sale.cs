@@ -9,12 +9,9 @@ public class Sale
     [ForeignKey("SellerId")]
     public int SellerId { get; set; }
     public DateTime SaleDate { get; set; } = DateTime.Today;
-    [Required(ErrorMessage = "Debe seleccionar un producto.")]
-    public int ProductId { get; set; }
     [Required(ErrorMessage = "Debe introducir una cantidad.")]
     [Range(1, 10000, ErrorMessage = "La cantidad debe estar entre {1} y {2}")]
     public int Quantity { get; set; }
-    [Required(ErrorMessage = "Introduzca un concepto.")]
     public string Concept { get; set; } = string.Empty;
     public List<SaleDetail> SalesDetails { get; set; } = new List<SaleDetail>();
 }
