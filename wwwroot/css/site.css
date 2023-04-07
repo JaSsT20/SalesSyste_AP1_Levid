@@ -3,20 +3,25 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-
+a, .btn-link{
+    color: #1861ac;
+}
 h1:focus {
     outline: none;
 }
-
-a, .btn-link {
-    color: #ffffff;
+#userTag{
+    color: #FFFFFF;
 }
-.btn-link:hover{
-    color: red;
+#closeSesion{
+    color: #FFFFFF;
 }
-.userTag, a:hover{
+#userTag:hover{
     color: #258cfb;
 }
+#closeSesion:hover{
+    color: #f60000;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
