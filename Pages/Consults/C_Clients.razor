@@ -1,0 +1,270 @@
+@page "/c_clients"
+@inject ClientBLL ClientBLL
+@inject NotificationService message
+
+<div class="card-header">
+    <h2>Consulta de clientes</h2>
+    <div class='row'>
+        <div class='col-md-3'>
+            <label>Desde</label>
+            <InputDate @bind-Value="InitialDate" class="form-control"></InputDate>
+        </div>
+        <div class='col-md-3'>
+            <label>Hasta</label>
+            <div class="finalDate">
+                <InputDate @bind-Value="FinalDate" class="form-control"></InputDate>
+                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="ResetDate"></button>
+            </div>
+        </div>
+    </div>
+    <div class='row'>
+        @* Filtro *@
+        <div class='col-md-4'>
+            <label>Filtro</label>
+            <div class="filter-box">
+                <InputSelect class="form-control" @bind-Value="option">
+                    <option value=0>Sin filtro</option>
+                    <option value=1>Cliente Id</option>
+                    <option value=2>Nombre</option>
+                    <option value=3>Apellido</option>
+                    <option value=4>Cédula</option>
+                    <option value=5>Email</option>
+                    <option value=6>Teléfono</option>
+                </InputSelect>
+                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="RestartFilter"></button>
+            </div>
+        </div>
+        <div class='col-md-6'>
+        @* Criterio *@
+            <label>Criterio</label>
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <input id="c_search" type="text" class="form-control" @bind="criterion" disabled="@activeCriterion"/>
+                    <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filter"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cédula</th>
+                <th>Email</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Fecha de entrada</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var client in Results)
+            {
+                <tr>
+                    <td>@client.ClientId</td>
+                    <td>@client.Name</td>
+                    <td>@client.LastName</td>
+                    <td>@client.IdentificationNumber</td>
+                    <td>@client.Email</td>
+                    <td>@client.Address</td>
+                    <td>@client.Telephone</td>
+                    <td>@client.RegisterDate.ToString("dd/MM/yyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public int option { get; set;}
+    public List<Client> Results { get; set; } = new List<Client>();
+    public bool activeCriterion {get {return option == 0;}}
+    public string criterion {get; set;} = string.Empty;
+    public DateTime InitialDate { get; set; }
+    public DateTime FinalDate { get; set; }
+    protected override void OnInitialized()
+    {
+        Results  = ClientBLL.GetList(item => true);
+        InitialDate = GetOldestClient().RegisterDate;
+        FinalDate = GetYoungestClient().RegisterDate;
+    }
+    private void Filter()
+    {
+        
+        switch (option)
+        {
+            case 0:
+            {
+                NoFilter();
+                SearchByDateRange();
+                break;
+            }               
+            case 1:
+            {
+                SearchById();
+                break;
+            }
+            case 2:
+            {
+                SearchByName();
+                break;
+            }
+            case 3:
+            {
+                SearchByLastName();
+                break;
+            }
+            case 4:
+            {
+                SearchByIdentificationNumber();
+                break;
+            }
+            case 5:
+            {
+                SearchByEmail();
+                break;
+            }
+            case 6:
+            {
+                SearchByTelephone();
+                break;
+            }
+        }
+        if (!Results.Any())
+            message.ShowNotification("Oops!","Parece que no se han encontrado resultados.", NotificationSeverity.Warning);
+    }
+    void SearchById()
+    {
+        int searchId = 0;
+        if (int.TryParse(criterion, out searchId))
+        {
+            Results = ClientBLL.GetList(item => item.ClientId == searchId 
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+        else
+        {
+            message.ShowNotification("Valor inválido","El criterio de busqueda debe ser un entero. EJ: 1", NotificationSeverity.Error);
+            return;
+        }
+    }
+    void NoFilter()
+    {
+        Results = ClientBLL.GetList(item => true);
+        criterion = string.Empty;
+    }
+    void SearchByDateRange()
+    {
+        if(Validate())
+            Results = ClientBLL.GetList(item => item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+    }
+    void SearchByName()
+    {
+        if(Validate())
+        {
+            Results = ClientBLL.GetList(item => item.Name.ToLower().Contains(criterion.ToLower())
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+    }
+    void SearchByLastName()
+    {
+        if(Validate())
+        {
+            Results = ClientBLL.GetList(item => item.LastName.ToLower().Contains(criterion.ToLower())
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+    }
+    void SearchByIdentificationNumber()
+    {
+        if(Validate())
+        {
+            Results = ClientBLL.GetList(item => item.IdentificationNumber.Contains(criterion)
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+    }
+    void SearchByEmail()
+    {
+        if(Validate())
+        {
+            Results = ClientBLL.GetList(item => item.Email.ToLower().Contains(criterion.ToLower())
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+    }
+    void SearchByTelephone()
+    {
+        if(Validate())
+        {
+            Results = ClientBLL.GetList(item => item.Telephone.Contains(criterion)
+            && item.RegisterDate >= InitialDate && item.RegisterDate <= FinalDate);
+        }
+    }
+    bool Validate()
+    {
+        if(InitialDate > FinalDate)
+        {
+            message.Wrong("La fehca inicial no puede ser mayor que la fecha límite.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(criterion) && option != 0)
+        {
+            message.Wrong("Debe colocar un criterio de búsqueda válido.");
+            return false;
+        }
+        else
+            return true;
+    }
+    void ResetDate()
+    {
+        if(!(InitialDate == GetOldestClient().RegisterDate && FinalDate == GetYoungestClient().RegisterDate))
+        {
+            InitialDate = GetOldestClient().RegisterDate;
+            FinalDate = GetYoungestClient().RegisterDate;
+            message.Info("Fecha restaurada", "Se han puesto los valores por defecto de la fecha.");
+        }
+    }
+    Client GetOldestClient()
+    {
+        List<Client> clientList = ClientBLL.GetList(item => true);
+        Client oldestClient = clientList[0];
+        if(clientList != null)
+        {
+            foreach (var item in clientList)
+            {
+                if(oldestClient.RegisterDate > item.RegisterDate)
+                {
+                    oldestClient = item;
+                }
+            }
+        }
+        return oldestClient;
+    }
+    Client GetYoungestClient()
+    {
+        List<Client> ClientList = ClientBLL.GetList(item => true);
+        Client youngestClient = ClientList[0];
+        if(ClientList != null)
+        {
+            foreach (var item in ClientList)
+            {
+                if(youngestClient.RegisterDate <= item.RegisterDate)
+                {
+                    youngestClient = item;
+                }
+            }
+        }
+        return youngestClient;
+    }
+    void RestartFilter()
+    {
+        if(option != 0)
+        {
+            option = 0;
+            Filter();
+            message.Info("Filtro restablecido", "Se ha restablecido el filtro de búsqueda");
+        }
+    }
+}
