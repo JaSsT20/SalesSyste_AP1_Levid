@@ -170,7 +170,7 @@
     {
         if(Validate())
         {
-            Results = ProductsBLL.GetList(item => item.Description.ToLower() == criterion.ToLower()
+            Results = ProductsBLL.GetList(item => item.Description.ToLower().Contains(criterion.ToLower())
             && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
         }
     }
