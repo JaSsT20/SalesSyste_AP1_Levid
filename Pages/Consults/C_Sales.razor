@@ -1,0 +1,318 @@
+@page "/c_sales"
+@inject SaleBLL SaleBLL
+@inject NotificationService message
+
+<div class="card-header">
+    <h2>Consulta de centas</h2>
+    <div class='row'>
+        <div class='col-md-3'>
+            <label>Desde</label>
+            <InputDate @bind-Value="InitialDate" class="form-control"></InputDate>
+        </div>
+        <div class='col-md-3'>
+            <label>Hasta</label>
+            <div class="finalDate">
+                <InputDate @bind-Value="FinalDate" class="form-control"></InputDate>
+                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="ResetDate"></button>
+            </div>
+        </div>
+    </div>
+    <div class='row'>
+        @* Filtro *@
+        <div class='col-md-4'>
+            <label>Filtro</label>
+            <div class="filter-box">
+                <InputSelect class="form-control" @bind-Value="option">
+                    <option value=0>Sin filtro</option>
+                    <option value=1>Venta Id</option>
+                    <option value=2>Cliente Id</option>
+                    <option value=3>Vendedor Id</option>
+                    <option value=4>Cantidad</option>
+                    <option value=5>Concepto</option>
+                </InputSelect>
+                <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="RestartFilter"></button>
+            </div>
+        </div>
+        <div class='col-md-6'>
+        @* Criterio *@
+            @if(option == 4)
+            {
+                <div class='row'>
+                    <div class='col-md-4'>
+                        <label>Valor Mínimo</label>
+                        <InputText @bind-Value="Min" class="form-control"></InputText>
+                    </div>
+                    <div class='col-md-4'>
+                        <label>Valor Máximo</label>
+                        <div id="c_search">
+                            <InputText @bind-Value="Max" class="form-control"></InputText>
+                            <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filter"></button>
+                        </div>
+                    </div>
+                </div>
+                
+            }
+            else
+            {
+                <label>Criterio</label>
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <input id="c_search" type="text" class="form-control" @bind="criterion" disabled="@activeCriterion"/>
+                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Filter"></button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Cliente</th>
+                <th>Concepto</th>
+                <th>Cantidad</th>
+                <th>Vendedor</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(var sale in Results)
+            {
+                <tr>
+                    <td>@sale.SaleId</td>
+                    <td>@sale.ClientId</td>
+                    <td>@sale.Concept</td>
+                    <td>@sale.Quantity</td>
+                    <td>@sale.SellerId</td>
+                    <td>@sale.SaleDate.ToString("dd/MM/yyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    public int option { get; set;}
+    public List<Sale> Results { get; set; } = new List<Sale>();
+    public bool activeCriterion {get {return option == 0;}}
+    public string criterion {get; set;} = string.Empty;
+    public DateTime InitialDate { get; set; }
+    public DateTime FinalDate { get; set; }
+    public string Min { get; set; } = string.Empty;
+    public string Max { get; set; } = string.Empty;
+    protected override void OnInitialized()
+    {
+        Results  = SaleBLL.GetList(item => true);
+        InitialDate = GetOldestSale().SaleDate;
+        FinalDate = GetYoungestSale().SaleDate;
+    }
+    private void Filter()
+    {
+        
+        switch (option)
+        {
+            case 0:
+            {
+                NoFilter();
+                SearchByDateRange();
+                break;
+            }               
+            case 1:
+            {
+                SearchById();
+                break;
+            }
+            case 2:
+            {
+                SearchByClientId();
+                break;
+            }
+            case 3:
+            {
+                SearchBySellerId();
+                break;
+            }
+            case 4:
+            {
+                SearchByQuantity();
+                break;
+            }
+            case 5:
+            {
+                SearchByConcept();
+                break;
+            }
+        }
+        if (!Results.Any())
+            message.ShowNotification("Oops!","Parece que no se han encontrado resultados.", NotificationSeverity.Warning);
+    }
+    void SearchById()
+    {
+        int searchId = 0;
+        if (int.TryParse(criterion, out searchId))
+        {
+            Results = SaleBLL.GetList(item => item.SaleId == searchId 
+            && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+        }
+        else
+        {
+            message.ShowNotification("Valor inválido","El criterio de busqueda debe ser un entero. EJ: 1", NotificationSeverity.Error);
+            return;
+        }
+    }
+    void SearchByClientId()
+    {
+        int searchId = 0;
+        if (int.TryParse(criterion, out searchId))
+        {
+            Results = SaleBLL.GetList(item => item.ClientId == searchId 
+            && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+        }
+        else
+        {
+            message.ShowNotification("Valor inválido","El criterio de busqueda debe ser un entero. EJ: 1", NotificationSeverity.Error);
+            return;
+        }
+    }
+    void SearchBySellerId()
+    {
+        int searchId = 0;
+        if (int.TryParse(criterion, out searchId))
+        {
+            Results = SaleBLL.GetList(item => item.SellerId == searchId 
+            && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+        }
+        else
+        {
+            message.ShowNotification("Valor inválido","El criterio de busqueda debe ser un entero. EJ: 1", NotificationSeverity.Error);
+            return;
+        }
+    }
+    void NoFilter()
+    {
+        Results = SaleBLL.GetList(item => true);
+        criterion = string.Empty;
+    }
+    void SearchByDateRange()
+    {
+        if(Validate())
+            Results = SaleBLL.GetList(item => item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+    }
+    void SearchByConcept()
+    {
+        if(Validate())
+        {
+            Results = SaleBLL.GetList(item => item.Concept.ToLower().Contains(criterion.ToLower())
+            && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+        }
+    }
+    void SearchByQuantity()
+    {
+        float minValue = 0, maxValue = 0;
+        if(!string.IsNullOrEmpty(Min) && string.IsNullOrEmpty(Max))
+        {
+            float.TryParse(Min, out minValue);
+            Max = "0";
+            float.TryParse(Max, out maxValue);
+        }
+        if(string.IsNullOrEmpty(Min) && !string.IsNullOrEmpty(Max))
+        {
+            float.TryParse(Max, out maxValue);
+            Min = "0";
+            float.TryParse(Min, out minValue);
+        }
+        if (float.TryParse(Min, out minValue) && float.TryParse(Max, out maxValue))
+        {
+            if(minValue >= 0 && maxValue == 0)
+            {
+                Results = SaleBLL.GetList(item => item.Quantity >= minValue && item.Quantity <= float.MaxValue
+                && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+            }
+            else if(minValue <= 0 && maxValue >=0)
+            {
+                Results = SaleBLL.GetList(item => item.Quantity >= 0 && item.Quantity <= maxValue
+                && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+            }
+            else
+            {
+                Results = SaleBLL.GetList(item => item.Quantity >= minValue && item.Quantity <= maxValue
+                && item.SaleDate >= InitialDate && item.SaleDate <= FinalDate);
+            }
+        }
+        else
+        {
+            message.Wrong("Se han proporcionado valores no numéricos para trabajar.");
+        }
+    }
+    bool Validate()
+    {
+        if(InitialDate > FinalDate)
+        {
+            message.Wrong("La fehca inicial no puede ser mayor que la fecha límite.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(criterion) && option != 0)
+        {
+            message.Wrong("Debe colocar un criterio de búsqueda válido.");
+            return false;
+        }
+        else
+            return true;
+    }
+    void ResetDate()
+    {
+        if(!(InitialDate == GetOldestSale().SaleDate && FinalDate == GetYoungestSale().SaleDate))
+        {
+            InitialDate = GetOldestSale().SaleDate;
+            FinalDate = GetYoungestSale().SaleDate;
+            message.Info("Fecha restaurada", "Se han puesto los valores por defecto de la fecha.");
+        }
+    }
+    Sale GetOldestSale()
+    {
+        List<Sale> SaleList = SaleBLL.GetList(item => true);
+        Sale oldestSale = SaleList[0];
+        if(SaleList != null)
+        {
+            foreach (var item in SaleList)
+            {
+                if(oldestSale.SaleDate > item.SaleDate)
+                {
+                    oldestSale = item;
+                }
+            }
+        }
+        return oldestSale;
+    }
+    Sale GetYoungestSale()
+    {
+        List<Sale> SaleList = SaleBLL.GetList(item => true);
+        Sale youngestSale = SaleList[0];
+        if(SaleList != null)
+        {
+            foreach (var item in SaleList)
+            {
+                if(youngestSale.SaleDate <= item.SaleDate)
+                {
+                    youngestSale = item;
+                }
+            }
+        }
+        return youngestSale;
+    }
+    void RestartFilter()
+    {
+        if(option != 0)
+        {
+            option = 0;
+            Min = "0";
+            Max = "0";
+            Filter();
+            message.Info("Filtro restablecido", "Se ha restablecido el filtro de búsqueda");
+        }
+    }
+}
