@@ -1,0 +1,245 @@
+@page "/r_sales"
+@inject SaleBLL SaleBLL
+@inject ProductsBLL ProductsBLL
+@inject ClientBLL ClientBLL
+@inject SellerBLL SellerBLL
+@inject NotificationService notify
+
+<EditForm Model="sale" OnValidSubmit="Save">
+    <DataAnnotationsValidator/>
+    <div class="card">
+        @* Header card *@
+        <div class="card-header">
+            <h3>Registro de ventas</h3>
+        </div>
+        @* BodyCard *@
+        <div class="card-body">
+            <label class="form-label">Venta Id</label>
+            <label id="datelbl" class="form-label">Fecha</label>
+            <div id="search-id"> @*Buscar y ID*@
+                <InputNumber @bind-Value="sale.SaleId" class="form-control"></InputNumber>
+                <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                <InputDate @bind-Value="sale.SaleDate" class="form-control" id="date"></InputDate>
+            </div>
+
+            <div class="row">
+                @* Cliente *@
+                <div class="col-md-6">
+                    <label class="form-label">Cliente</label>
+                    <InputSelect @bind-Value="sale.ClientId" class="form-select">
+                        @foreach (var client in ClientList)
+                        {
+                            <option value="@client.ClientId">@client.Name @client.LastName</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => sale.ClientId)" />
+                </div>
+                @* Vendedor *@
+                <div class="col-md-6">
+                    <label class="form-label">Vendedor</label>
+                    <InputSelect @bind-Value="sale.SellerId" class="form-select">
+                        @foreach (var seller in SellerList)
+                        {
+                            <option value="@seller.SellerId">@seller.Name @seller.LastName</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => sale.SellerId)" />
+                </div>
+            </div>
+            <label>Concepto</label>
+            <InputText @bind-Value='sale.Concept' class='form-control'></InputText>
+            
+            @* DETALLE *@
+            <div class="card-header">
+                <h3>Detalle</h3>
+            </div>
+                <div class='row'>
+                    <div class='col-md-6'>              
+                        <label>Producto</label>
+                        <InputSelect @bind-Value='detail.ProductId' class='form-select'>
+                            @foreach (var product in ProductList)
+                            {
+                                <option value="@product.ProductId">@product.Description (@product.Existence)</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class='col-md-6'>
+                        <label>Cantidad</label>
+                        <div class="input-group mb-3">
+                            <InputNumber @bind-Value='detail.Quantity' class='form-control'></InputNumber>
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="button"><span class="oi oi-plus" @onclick="AddDetail"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class='table table-xl'>
+                    <thead>
+                        <th>Id</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>SubTotal</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        @foreach(var det in sale.SalesDetails)
+                        {
+                            var prod = SearchProduct(det.ProductId);
+                            var SubTotal = @prod.Price * @det.Quantity;
+                            <tr>
+                                <td>@det.ProductId</td>
+                                <td>@prod.Description</td>
+                                <td class="price">@prod.Price</td>
+                                <td>@det.Quantity</td>
+                                <td class="price">@SubTotal</td>
+                                <td><button type="button" class="btn btn-danger oi oi-trash" @onclick=@(() => RemoveDetail(det))></button></td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <div class='row'>
+                            <div class='col-md'>
+                                <h6>Cantidad: @sale.SalesDetails.Sum(det => det.Quantity)</h6>
+                            </div>
+                            <div class='col-md'>
+                                <h6 class="price">Total: $@sale.SalesDetails.Sum(det => det.AmountPaid)</h6>
+                            </div>
+                        </div>
+                    </tfoot>
+                </table>
+        </div> @*EN BODY CARD*@
+        @* Footer card *@
+        <div class="card-footer">
+            <button type="button" class="btn btn-primary" @onclick="New">Nuevo</button>
+            <button type="submit" class="btn btn-success" @onclick="Save">Guardar</button>
+            <button type="button" class="btn btn-danger" @onclick="Delete">Eliminar</button>
+        </div>
+    </div>
+</EditForm>
+
+@code{
+    private Sale sale { get; set; } = new Sale();
+    public SaleDetail detail { get; set; } = new SaleDetail();
+    public List<Product> ProductList { get; set; } = new List<Product>();
+    public List<Client> ClientList { get; set; } = new List<Client>();
+    public List<Seller> SellerList { get; set; } = new List<Seller>();
+    protected override void OnInitialized()
+    {
+        ProductList = ProductsBLL.GetList(pr => true);
+        ClientList = ClientBLL.GetList(cl => true);
+        SellerList = SellerBLL.GetList(sl => true);
+    }
+    void Search()
+    {
+        var saleFound = SaleBLL.Search(sale.SaleId);
+        if(saleFound != null)
+        {
+            sale = saleFound;
+            @* notification.Info(); *@
+        }
+        else
+        {
+            notify.ShowNotification("No encontrado", "Ese id no se ha registrado.", NotificationSeverity.Warning);
+        } 
+    }
+    void Save()
+    {
+        if(!Validate())
+            return;
+        if(SaleBLL.Save(sale))
+        {
+            New();
+            notify.ShowNotification("¡Guardado!", "Se ha guardado correctamente.", NotificationSeverity.Success);
+        }
+        else
+        {
+            notify.ShowNotification("Error", "Revise que todos los campos esten llenos.", NotificationSeverity.Error);  
+        }
+    }
+    void New()
+    {
+        sale = new Sale();
+        detail = new SaleDetail();
+        notify.ShowNotification("Nuevo", "El registro esta listo.", NotificationSeverity.Info);
+    }
+    void Delete()
+    {
+        if(SaleBLL.Delete(sale))
+        {
+            New();
+            notify.ShowNotification("Eliminado", "Se ha eliminado correctamente.", NotificationSeverity.Success);
+        }
+        else
+        {
+            notify.Wrong();
+        }
+    }
+    bool Validate()
+    {
+        if(sale.SaleId < 0)
+        {
+            notify.Wrong("El id no puede ser menor que cero.");
+            return false;
+        }
+        if(sale.ClientId <= 0)
+        {
+            notify.Wrong("Debe seleccionar un cliente.");
+            return false;
+        }
+        if(sale.SellerId <= 0)
+        {
+            notify.Wrong("Debe seleccionar un vendedor.");
+            return false;
+        }
+        if(sale.SalesDetails.Count <= 0)
+        {
+            notify.Wrong("Debe agregar al menos un producto.");
+            return false;
+        }
+        else
+            return true;
+    }
+    private Product SearchProduct(int productId)
+    {
+        Product prod = new Product();
+        var prodFound = ProductsBLL.Search(productId);
+        if(prodFound != null)
+            return prod = prodFound;
+        return new Product();
+    }
+    @* Detail functions *@
+    void AddDetail()
+    {
+        if(detail.Quantity <= 0){
+            notify.ShowNotification("Error", "La cantidad debe ser mayor que cero.", NotificationSeverity.Warning);
+                return;
+        }
+        var product = ProductsBLL.Search(detail.ProductId);
+        if(product != null && product.Existence < detail.Quantity)
+        {
+            notify.ShowNotification("Error", "La cantidad deseada supera la disponible", NotificationSeverity.Warning);
+                return;
+        }
+        if(product != null)
+        {
+            sale.SalesDetails.Sum(d => d.AmountPaid);
+            sale.SalesDetails.Add(detail);
+            detail = new SaleDetail();
+        }
+    }
+    void RemoveDetail(SaleDetail det)
+    {
+        var detFound = sale.SalesDetails.Find(d => d.Id == det.Id);
+        if(detFound != null)
+        {
+            var prod = SearchProduct(detFound.ProductId);
+            if(prod != null)
+            {
+                prod.Existence += detFound.Quantity;
+            }
+            det = detFound;
+            sale.SalesDetails.Remove(det); 
+        }
+    }
+}
