@@ -6,49 +6,51 @@
 
 <EditForm Model="product" OnValidSubmit="Save">
     <DataAnnotationsValidator />
-    <div class='card'>
-        @* Header *@
-        <div class='card-header'>
-            <h3>Registro de productos</h3>
-        </div>
-        @* Body *@
-        <div class='card-body'>
-            @* BeginRow *@
-            <div class='row'>
-                <div class='col-md-6'>
-                    <label>Producto Id</label>
-                    <div id="search-id">
-                        <InputNumber @bind-Value='product.ProductId' class='form-control'></InputNumber>
-                        <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+    <div class="container">
+        <div class='card'>
+            @* Header *@
+            <div class='card-header'>
+                <h3>Registro de productos</h3>
+            </div>
+            @* Body *@
+            <div class='card-body'>
+                @* BeginRow *@
+                <div class='row'>
+                    <div class='col-md-6'>
+                        <label>Producto Id</label>
+                        <div id="search-id">
+                            <InputNumber @bind-Value='product.ProductId' class='form-control'></InputNumber>
+                            <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                        </div>
+                    </div>
+                    <div class='col-md-6'>
+                        <label>Fecha de ingreso</label>
+                        <InputDate @bind-Value='product.EntryDate' class='form-control'></InputDate>
+                    </div>    
+                </div>@* EndRow *@
+                @* Descripcion del producto *@
+                <label>Descripción</label>
+                <InputText @bind-Value='product.Description' class='form-control'></InputText>
+                <ValidationMessage For="@(() => product.Description)" />
+                <div class='row'>
+                    <div class='col-md-6'>
+                        <label>Precio</label>
+                        <InputNumber @bind-Value='product.Price' class='form-control'></InputNumber>
+                        <ValidationMessage For="@(() => product.Price)" />
+                    </div>
+                    <div class='col-md-6'>
+                        <label>Existencia</label>
+                        <InputNumber @bind-Value='product.Existence' class='form-control'></InputNumber>
+                        <ValidationMessage For="@(() => product.Existence)" />
                     </div>
                 </div>
-                <div class='col-md-6'>
-                    <label>Fecha de ingreso</label>
-                    <InputDate @bind-Value='product.EntryDate' class='form-control'></InputDate>
-                </div>    
-            </div>@* EndRow *@
-            @* Descripcion del producto *@
-            <label>Descripción</label>
-            <InputText @bind-Value='product.Description' class='form-control'></InputText>
-            <ValidationMessage For="@(() => product.Description)" />
-            <div class='row'>
-                <div class='col-md-6'>
-                    <label>Precio</label>
-                    <InputNumber @bind-Value='product.Price' class='form-control'></InputNumber>
-                    <ValidationMessage For="@(() => product.Price)" />
-                </div>
-                <div class='col-md-6'>
-                    <label>Existencia</label>
-                    <InputNumber @bind-Value='product.Existence' class='form-control'></InputNumber>
-                    <ValidationMessage For="@(() => product.Existence)" />
-                </div>
+            </div> @*End BODY*@
+            @* Footer *@
+            <div class='card-footer'>
+                <button type='button' class='btn btn-primary'@onclick='New'><span class="oi oi-plus"/> Nuevo </button>
+                <button type='submit' class='btn btn-success'><span class="oi oi-check"/> Guardar </button>
+                <button type='button' class='btn btn-danger'@onclick='Delete'><span class="oi oi-delete"/> Eliminar </button>
             </div>
-        </div> @*End BODY*@
-        @* Footer *@
-        <div class='card-footer'>
-            <button type='button' class='btn btn-primary' @onclick='New'> Nuevo </button>
-            <button type='submit' class='btn btn-success'> Guardar </button>
-            <button type='button' class='btn btn-danger'@onclick='Delete'> Eliminar </button>
         </div>
     </div>
     <ValidationSummary/>

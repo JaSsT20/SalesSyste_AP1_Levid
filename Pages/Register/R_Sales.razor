@@ -9,112 +9,113 @@
 
 <EditForm Model="sale" OnValidSubmit="Save">
     <DataAnnotationsValidator/>
-    <div class="card">
-        @* Header card *@
-        <div class="card-header">
-            <h3>Registro de ventas</h3>
-        </div>
-        @* BodyCard *@
-        <div class="card-body">
-            <label class="form-label">Venta Id</label>
-            <label id="datelbl" class="form-label">Fecha</label>
-            <div id="search-id"> @*Buscar y ID*@
-                <InputNumber @bind-Value="sale.SaleId" class="form-control"></InputNumber>
-                <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
-                <InputDate @bind-Value="sale.SaleDate" class="form-control" id="date"></InputDate>
-            </div>
-
-            <div class="row">
-                @* Cliente *@
-                <div class="col-md-6">
-                    <label class="form-label">Cliente</label>
-                    <InputSelect @bind-Value="sale.ClientId" class="form-select">
-                        @foreach (var client in ClientList)
-                        {
-                            <option value="@client.ClientId">@client.Name @client.LastName</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => sale.ClientId)" />
-                </div>
-                @* Vendedor *@
-                <div class="col-md-6">
-                    <label class="form-label">Vendedor</label>
-                    <InputSelect @bind-Value="sale.SellerId" class="form-select">
-                        @foreach (var seller in SellerList)
-                        {
-                            <option value="@seller.SellerId">@seller.Name @seller.LastName</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => sale.SellerId)" />
-                </div>
-            </div>
-            <label>Concepto</label>
-            <InputText @bind-Value='sale.Concept' class='form-control'></InputText>
-            
-            @* DETALLE *@
+    <div class="container">
+        <div class="card">
+            @* Header card *@
             <div class="card-header">
-                <h3>Detalle</h3>
+                <h3>Registro de ventas</h3>
             </div>
-                <div class='row'>
-                    <div class='col-md-6'>              
-                        <label>Producto</label>
-                        <InputSelect @bind-Value='detail.ProductId' class='form-select'>
-                            @foreach (var product in ProductList)
+            @* BodyCard *@
+            <div class="card-body">
+                <label class="form-label">Venta Id</label>
+                <label id="datelbl" class="form-label">Fecha</label>
+                <div id="search-id"> @*Buscar y ID*@
+                    <InputNumber @bind-Value="sale.SaleId" class="form-control"></InputNumber>
+                    <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                    <InputDate @bind-Value="sale.SaleDate" class="form-control" id="date"></InputDate>
+                </div>
+                <div class="row">
+                    @* Cliente *@
+                    <div class="col-md-6">
+                        <label class="form-label">Cliente</label>
+                        <InputSelect @bind-Value="sale.ClientId" class="form-select">
+                            @foreach (var client in ClientList)
                             {
-                                <option value="@product.ProductId">@product.Description (@product.Existence)</option>
+                                <option value="@client.ClientId">@client.Name @client.LastName</option>
                             }
                         </InputSelect>
+                        <ValidationMessage For="@(() => sale.ClientId)" />
                     </div>
-                    <div class='col-md-6'>
-                        <label>Cantidad</label>
-                        <div class="input-group mb-3">
-                            <InputNumber @bind-Value='detail.Quantity' class='form-control'></InputNumber>
-                            <div class="input-group-append">
-                                <button class="btn btn-success" type="button"><span class="oi oi-plus" @onclick="AddDetail"></span></button>
+                    @* Vendedor *@
+                    <div class="col-md-6">
+                        <label class="form-label">Vendedor</label>
+                        <InputSelect @bind-Value="sale.SellerId" class="form-select">
+                            @foreach (var seller in SellerList)
+                            {
+                                <option value="@seller.SellerId">@seller.Name @seller.LastName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => sale.SellerId)" />
+                    </div>
+                </div>
+                <label>Concepto</label>
+                <InputText @bind-Value='sale.Concept' class='form-control'></InputText>
+                
+                @* DETALLE *@
+                <div class="card-header">
+                    <h3>Detalle</h3>
+                </div>
+                    <div class='row'>
+                        <div class='col-md-6'>              
+                            <label>Producto</label>
+                            <InputSelect @bind-Value='detail.ProductId' class='form-select'>
+                                @foreach (var product in ProductList)
+                                {
+                                    <option value="@product.ProductId">@product.Description (@product.Existence)</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class='col-md-6'>
+                            <label>Cantidad</label>
+                            <div class="input-group mb-3">
+                                <InputNumber @bind-Value='detail.Quantity' class='form-control'></InputNumber>
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="button"><span class="oi oi-plus" @onclick="AddDetail"></span></button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <table class='table table-sm'>
-                    <thead>
-                        <th>Id</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>SubTotal</th>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        @foreach(var det in sale.SalesDetails)
-                        {
-                            var prod = SearchProduct(det.ProductId);
-                            var SubTotal = @prod.Price * @det.Quantity;
-                            <tr>
-                                <td>@det.ProductId</td>
-                                <td>@prod.Description</td>
-                                <td class="price">@prod.Price</td>
-                                <td>@det.Quantity</td>
-                                <td class="price">@SubTotal</td>
-                                <td><button type="button" class="btn btn-danger oi oi-trash" @onclick=@(() => RemoveDetail(det))></button></td>
-                            </tr>
-                        }
-                    </tbody>
-                    <tfoot>
-                        @if(sale.SalesDetails.Sum(d=> d.AmountPaid) != 0)
-                        {
-                            <tr>
-                                <td class="table-active">Total: </td>
-                                <td class="price">$@sale.SalesDetails.Sum(d=> d.AmountPaid) </td>
-                            </tr>
-                        }
-                    </tfoot>
-                </table>
-        </div> @*END BODY CARD*@
-        @* Footer card *@
-        <div class="card-footer">
-            <button type="button" class="btn btn-primary" @onclick="New">Nuevo</button>
-            <button type="submit" class="btn btn-success" @onclick="Save">Guardar</button>
-            <button type="button" class="btn btn-danger" @onclick="Delete">Eliminar</button>
+                    <table class='table table-sm'>
+                        <thead>
+                            <th>Id</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>SubTotal</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            @foreach(var det in sale.SalesDetails)
+                            {
+                                var prod = SearchProduct(det.ProductId);
+                                var SubTotal = @prod.Price * @det.Quantity;
+                                <tr>
+                                    <td>@det.ProductId</td>
+                                    <td>@prod.Description</td>
+                                    <td class="price">@prod.Price</td>
+                                    <td>@det.Quantity</td>
+                                    <td class="price">@SubTotal</td>
+                                    <td><button type="button" class="btn btn-danger oi oi-trash" @onclick=@(() => RemoveDetail(det))></button></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            @if(sale.SalesDetails.Sum(d=> d.AmountPaid) != 0)
+                            {
+                                <tr>
+                                    <td class="table-active">Total: </td>
+                                    <td class="price">$@sale.SalesDetails.Sum(d=> d.AmountPaid) </td>
+                                </tr>
+                            }
+                        </tfoot>
+                    </table>
+            </div> @*END BODY CARD*@
+            @* Footer card *@
+            <div class='card-footer'>
+                <button type='button' class='btn btn-primary'@onclick='New'><span class="oi oi-plus"/> Nuevo </button>
+                <button type='submit' class='btn btn-success'><span class="oi oi-check"/> Guardar </button>
+                <button type='button' class='btn btn-danger'@onclick='Delete'><span class="oi oi-delete"/> Eliminar </button>
+            </div>
         </div>
     </div>
 </EditForm>
