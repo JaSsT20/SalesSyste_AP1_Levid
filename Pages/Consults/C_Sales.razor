@@ -76,6 +76,7 @@
                 <th>Concepto</th>
                 <th>Cantidad</th>
                 <th>Vendedor</th>
+                <th>Total</th>
                 <th>Fecha</th>
             </tr>
         </thead>
@@ -89,6 +90,7 @@
                     <td>@sale.Concept</td>
                     <td>@sale.Quantity</td>
                     <td>@sale.SellerId</td>
+                    <td class="price">$@sale.Total</td>
                     <td>@sale.SaleDate.ToString("dd/MM/yyy")</td>
                 </tr>
             }

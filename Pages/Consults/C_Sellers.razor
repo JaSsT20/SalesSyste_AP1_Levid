@@ -94,7 +94,7 @@
                     <td>@seller.IdentificationNumber</td>
                     <td>@seller.Address</td>
                     <td>@seller.Telephone</td>
-                    <td>@seller.TotalProductsSold</td>
+                    <td class="price">$@seller.TotalSold</td>
                     <td>@seller.EntryDate.ToString("dd/MM/yyy")</td>
                 </tr>
             }
@@ -250,17 +250,17 @@
         {
             if(minValue >= 0 && maxValue == 0)
             {
-                Results = SellerBLL.GetList(item => item.TotalProductsSold >= minValue && item.TotalProductsSold <= float.MaxValue
+                Results = SellerBLL.GetList(item => item.TotalSold >= minValue && item.TotalSold <= float.MaxValue
                 && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
             }
             else if(minValue <= 0 && maxValue >=0)
             {
-                Results = SellerBLL.GetList(item => item.TotalProductsSold >= 0 && item.TotalProductsSold <= maxValue
+                Results = SellerBLL.GetList(item => item.TotalSold >= 0 && item.TotalSold <= maxValue
                 && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
             }
             else
             {
-                Results = SellerBLL.GetList(item => item.TotalProductsSold >= minValue && item.TotalProductsSold <= maxValue
+                Results = SellerBLL.GetList(item => item.TotalSold >= minValue && item.TotalSold <= maxValue
                 && item.EntryDate >= InitialDate && item.EntryDate <= FinalDate);
             }
         }
