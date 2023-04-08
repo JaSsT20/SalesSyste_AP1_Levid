@@ -24,15 +24,16 @@ public class SaleBLL
                     product.Existence -= detail.Quantity;
                     sale.Quantity += detail.Quantity;
                     detail.AmountPaid += product.Price * detail.Quantity;
-                    seller = _context.Sellers.SingleOrDefault(s => s.SellerId == sale.SellerId);
-                    if(seller != null)
-                    {
-                        seller.TotalProductsSold += detail.Quantity;
-                        _context.Entry(seller).State = EntityState.Modified;
-                    }
+                    sale.Total += detail.AmountPaid;
                     _context.Entry(product).State = EntityState.Modified;
                     _context.Entry(detail).State = EntityState.Added;
                 }
+            }
+            seller = _context.Sellers.SingleOrDefault(s => s.SellerId == sale.SellerId);
+            if(seller != null)
+            {
+                seller.TotalSold += sale.Total;
+                _context.Entry(seller).State = EntityState.Modified;
             }
             _context.Entry(sale).State = EntityState.Added;
             changed = _context.SaveChanges() > 0;
@@ -44,34 +45,9 @@ public class SaleBLL
         }
         return changed;
     }
-    public bool Modify(Sale sale)
+    private bool Modify(Sale sale)
     {
-        bool changed = false;
-        
-        Product? addedProduct;
-        Seller? addedSeller;
-        foreach (var detail in sale.SalesDetails)
-        {
-            addedProduct = _context.Products.SingleOrDefault(p => p.ProductId == detail.ProductId);
-            addedSeller = _context.Sellers.SingleOrDefault(s => s.SellerId == sale.SellerId);
-            if(addedProduct != null)
-            {
-                addedProduct.Existence -= detail.Quantity;
-                sale.Quantity += detail.Quantity;
-                if(addedSeller != null)
-                {
-                    addedSeller.TotalProductsSold += detail.Quantity;
-                    _context.Sellers.Entry(addedSeller).State = EntityState.Modified;
-                }
-            _context.Products.Entry(addedProduct).State = EntityState.Modified;
-            _context.Sales.Entry(sale).State = EntityState.Modified;
-            }
-            changed = _context.SaveChanges() > 0;
-            _context.Sales.Entry(sale).State = EntityState.Detached;
-            return changed;
-
-        }
-        return changed;
+        return false;
     }
     public bool Save(Sale Sale)
     {
@@ -100,13 +76,13 @@ public class SaleBLL
                     product.Existence += detail.Quantity;
                     _context.Entry(product).State = EntityState.Modified;
                 }
-                Seller? seller;
-                seller = _context.Sellers.SingleOrDefault(s => s.SellerId == sale.SellerId);
-                if(seller != null)
-                {
-                    seller.TotalProductsSold -= detail.Quantity;
-                    _context.Entry(seller).State = EntityState.Modified;
-                }
+            }
+            Seller? seller;
+            seller = _context.Sellers.SingleOrDefault(s => s.SellerId == sale.SellerId);
+            if(seller != null)
+            {
+                seller.TotalSold -= sale.Total;
+                _context.Entry(seller).State = EntityState.Modified;
             }
             _context.Entry(sale).State = EntityState.Deleted;
             changed = _context.SaveChanges() > 0;
