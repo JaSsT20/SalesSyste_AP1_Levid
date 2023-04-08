@@ -7,11 +7,11 @@
     <h2>Consulta de productos</h2>
     <div class='row'>
         <div class='col-md-3'>
-            <label>Fecha incial</label>
+            <label>Desde</label>
             <InputDate @bind-Value="InitialDate" class="form-control"></InputDate>
         </div>
         <div class='col-md-3'>
-            <label>Fecha límite</label>
+            <label>Hasta</label>
             <div class="finalDate">
                 <InputDate @bind-Value="FinalDate" class="form-control"></InputDate>
                 <button type="button" class="btn btn-outline-primary oi oi-reload" @onclick="ResetDate"></button>
