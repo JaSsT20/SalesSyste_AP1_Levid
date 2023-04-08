@@ -2,6 +2,8 @@
 @attribute [Authorize]
 @inject SaleBLL SaleBLL
 @inject NotificationService message
+@inject IJSRuntime JsRuntime
+@inject ProductsBLL ProductsBLL
 
 <div class="card-header">
     <h2>Consulta de centas</h2>
@@ -68,7 +70,7 @@
 </div>
 
 <div class="card-body">
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>Id</th>
@@ -84,7 +86,7 @@
         <tbody>
             @foreach(var sale in Results)
             {
-                <tr>
+                <tr data-toggle="collapse" data-target=".det-@sale.SaleId">
                     <td>@sale.SaleId</td>
                     <td>@sale.ClientId</td>
                     <td>@sale.Concept</td>
@@ -93,6 +95,28 @@
                     <td class="price">$@sale.Total</td>
                     <td>@sale.SaleDate.ToString("dd/MM/yyy")</td>
                 </tr>
+                <table class="table table-sm">
+                    <thead>
+                        <tr class="collapse det-@sale.SaleId">
+                            <th>Venta</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>SubTotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var det in sale.SalesDetails)
+                        {
+                            var prod = SearchProduct(det.ProductId);
+                            <tr class="collapse det-@det.SaleId">
+                                <td>@det.SaleId</td>
+                                <td>[@prod.ProductId]@prod.Description</td>
+                                <td>@det.Quantity</td>
+                                <td class="price">@det.AmountPaid</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             }
         </tbody>
     </table>
@@ -112,6 +136,14 @@
         Results  = SaleBLL.GetList(item => true);
         InitialDate = GetOldestSale().SaleDate;
         FinalDate = GetYoungestSale().SaleDate;
+    }
+    private Product SearchProduct(int productId)
+    {
+        Product prod = new Product();
+        var prodFound = ProductsBLL.Search(productId);
+        if(prodFound != null)
+            return prod = prodFound;
+        return new Product();
     }
     private void Filter()
     {
