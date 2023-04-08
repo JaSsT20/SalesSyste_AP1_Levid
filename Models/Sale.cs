@@ -13,5 +13,6 @@ public class Sale
     [Range(1, 10000, ErrorMessage = "La cantidad debe estar entre {1} y {2}")]
     public int Quantity { get; set; }
     public string Concept { get; set; } = string.Empty;
+    public float Total { get; set; }
     public List<SaleDetail> SalesDetails { get; set; } = new List<SaleDetail>();
 }

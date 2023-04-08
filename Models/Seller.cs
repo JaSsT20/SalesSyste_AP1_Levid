@@ -20,5 +20,5 @@ public class Seller
     [StringLength(12, MinimumLength = 10, ErrorMessage = "El telefono debe contener al menos {2} dígitos y maximo {1} dígitos.")]
     public string Telephone { get; set; } = string.Empty;
     public DateTime EntryDate { get; set; } = DateTime.Today;
-    public int TotalProductsSold { get; set; }
+    public float TotalSold { get; set; }
 }
