@@ -310,9 +310,10 @@
     Sale GetOldestSale()
     {
         List<Sale> SaleList = SaleBLL.GetList(item => true);
-        Sale oldestSale = SaleList[0];
-        if(SaleList != null)
+        Sale oldestSale = new Sale();
+        if(SaleList.Any())
         {
+            oldestSale = SaleList[0];
             foreach (var item in SaleList)
             {
                 if(oldestSale.SaleDate > item.SaleDate)
@@ -326,9 +327,10 @@
     Sale GetYoungestSale()
     {
         List<Sale> SaleList = SaleBLL.GetList(item => true);
-        Sale youngestSale = SaleList[0];
-        if(SaleList != null)
+        Sale youngestSale = new Sale();
+        if(SaleList.Any())
         {
+            youngestSale = SaleList[0];
             foreach (var item in SaleList)
             {
                 if(youngestSale.SaleDate <= item.SaleDate)

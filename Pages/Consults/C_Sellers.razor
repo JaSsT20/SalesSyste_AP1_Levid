@@ -296,9 +296,10 @@
     Seller GetOldestSeller()
     {
         List<Seller> SellerList = SellerBLL.GetList(item => true);
-        Seller oldestSeller = SellerList[0];
-        if(SellerList != null)
+        Seller oldestSeller = new Seller();
+        if(SellerList.Any())
         {
+            oldestSeller = SellerList[0];
             foreach (var item in SellerList)
             {
                 if(oldestSeller.EntryDate > item.EntryDate)
@@ -312,9 +313,10 @@
     Seller GetYoungestSeller()
     {
         List<Seller> SellerList = SellerBLL.GetList(item => true);
-        Seller youngestSeller = SellerList[0];
-        if(SellerList != null)
+        Seller youngestSeller = new Seller();
+        if(SellerList.Any())
         {
+            youngestSeller = SellerList[0];
             foreach (var item in SellerList)
             {
                 if(youngestSeller.EntryDate <= item.EntryDate)

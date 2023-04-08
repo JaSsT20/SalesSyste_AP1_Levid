@@ -278,9 +278,10 @@
     Product GetOldestProduct()
     {
         List<Product> productList = ProductsBLL.GetList(item => true);
-        Product oldestProduct = productList[0];
-        if(productList != null)
+        Product oldestProduct = new Product();
+        if(productList.Any())
         {
+            oldestProduct = productList[0];
             foreach (var item in productList)
             {
                 if(oldestProduct.EntryDate > item.EntryDate)
@@ -294,9 +295,10 @@
     Product GetYoungestProduct()
     {
         List<Product> productList = ProductsBLL.GetList(item => true);
-        Product youngestProduct = productList[0];
-        if(productList != null)
+        Product youngestProduct = new Product();
+        if(productList.Any())
         {
+            youngestProduct = productList[0];
             foreach (var item in productList)
             {
                 if(youngestProduct.EntryDate <= item.EntryDate)

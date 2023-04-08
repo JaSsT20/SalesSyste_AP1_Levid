@@ -230,9 +230,10 @@
     Client GetOldestClient()
     {
         List<Client> clientList = ClientBLL.GetList(item => true);
-        Client oldestClient = clientList[0];
-        if(clientList != null)
+        Client oldestClient = new Client();
+        if(clientList.Any())
         {
+            oldestClient = clientList[0];
             foreach (var item in clientList)
             {
                 if(oldestClient.RegisterDate > item.RegisterDate)
@@ -246,9 +247,10 @@
     Client GetYoungestClient()
     {
         List<Client> ClientList = ClientBLL.GetList(item => true);
-        Client youngestClient = ClientList[0];
-        if(ClientList != null)
+        Client youngestClient = new Client();
+        if(ClientList.Any())
         {
+            youngestClient = ClientList[0];
             foreach (var item in ClientList)
             {
                 if(youngestClient.RegisterDate <= item.RegisterDate)
