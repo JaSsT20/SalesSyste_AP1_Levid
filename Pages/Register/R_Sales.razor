@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <table class='table table-xl'>
+                <table class='table table-sm'>
                     <thead>
                         <th>Id</th>
                         <th>Descripción</th>
@@ -99,17 +99,16 @@
                         }
                     </tbody>
                     <tfoot>
-                        <div class='row'>
-                            <div class='col-md'>
-                                <h6>Cantidad: @sale.SalesDetails.Sum(det => det.Quantity)</h6>
-                            </div>
-                            <div class='col-md'>
-                                <h6 class="price">Total: $@sale.SalesDetails.Sum(det => det.AmountPaid)</h6>
-                            </div>
-                        </div>
+                        @if(sale.SalesDetails.Sum(d=> d.AmountPaid) != 0)
+                        {
+                            <tr>
+                                <td class="table-active">Total: </td>
+                                <td class="price">$@sale.SalesDetails.Sum(d=> d.AmountPaid) </td>
+                            </tr>
+                        }
                     </tfoot>
                 </table>
-        </div> @*EN BODY CARD*@
+        </div> @*END BODY CARD*@
         @* Footer card *@
         <div class="card-footer">
             <button type="button" class="btn btn-primary" @onclick="New">Nuevo</button>
