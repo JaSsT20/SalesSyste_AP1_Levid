@@ -1,4 +1,5 @@
 @page "/r_sales"
+@page "/r_sales/{saleId:int}"
 @attribute [Authorize]
 @inject SaleBLL SaleBLL
 @inject ProductsBLL ProductsBLL
@@ -119,6 +120,8 @@
 </EditForm>
 
 @code{
+    [Parameter]
+    public int saleId { get; set; }
     private Sale sale { get; set; } = new Sale();
     public SaleDetail detail { get; set; } = new SaleDetail();
     public List<Product> ProductList { get; set; } = new List<Product>();
@@ -126,6 +129,11 @@
     public List<Seller> SellerList { get; set; } = new List<Seller>();
     protected override void OnInitialized()
     {
+        if(saleId > 0)
+        {
+            sale.SaleId = saleId;
+            Search();
+        }
         ProductList = ProductsBLL.GetList(pr => true);
         ClientList = ClientBLL.GetList(cl => true);
         SellerList = SellerBLL.GetList(sl => true);

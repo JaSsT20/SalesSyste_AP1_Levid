@@ -1,4 +1,5 @@
 @page "/r_sellers"
+@page "/r_sellers/{sellerId:int}"
 @attribute [Authorize]
 @inject NotificationService notify
 @inject SellerBLL SellerBLL
@@ -69,9 +70,19 @@
 </EditForm>
 
 @code{
+    [Parameter]
+    public int sellerId { get; set; }
     public Seller seller { get; set; } = new Seller();
+    protected override void OnInitialized()
+    {
+        if(sellerId > 0)
+        {
+            seller.SellerId = sellerId;
+            Search();
+        }
+    }
 
-        void Search()
+    void Search()
     {
         var sellerFound = SellerBLL.Search(seller.SellerId);
         if(sellerFound != null)
