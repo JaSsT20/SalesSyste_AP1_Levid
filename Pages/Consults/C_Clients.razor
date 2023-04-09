@@ -49,32 +49,33 @@
 </div>
 
 <div class="card-body">
-    <table class="table">
+    <table class="table table-sm">
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Cédula</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
-                <th>Cédula</th>
-                <th>Email</th>
                 <th>Dirección</th>
+                <th>Email</th>
                 <th>Teléfono</th>
-                <th>Fecha de entrada</th>
+                <th>Fecha</th>
+                <th></th>
             </tr>
         </thead>
-
         <tbody>
             @foreach(var client in Results)
             {
                 <tr>
                     <td>@client.ClientId</td>
+                    <td>@client.IdentificationNumber</td>
                     <td>@client.Name</td>
                     <td>@client.LastName</td>
-                    <td>@client.IdentificationNumber</td>
-                    <td>@client.Email</td>
                     <td>@client.Address</td>
+                    <td>@client.Email</td>
                     <td>@client.Telephone</td>
-                    <td>@client.RegisterDate.ToString("dd/MM/yyy")</td>
+                    <td>@client.RegisterDate.ToString("dd/MM/yyyy")</td>
+                    <td><a href="/r_clients/@client.ClientId"><span class="oi oi-eye"></span></a></td>
                 </tr>
             }
         </tbody>

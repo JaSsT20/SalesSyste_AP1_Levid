@@ -75,6 +75,7 @@
                 <th>Precio</th>
                 <th>Existencia</th>
                 <th>Fecha de entrada</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -87,6 +88,7 @@
                     <td class="price">$@product.Price</td>
                     <td>@product.Existence</td>
                     <td>@product.EntryDate.ToString("dd/MM/yyy")</td>
+                    <td><a href="/r_products/@product.ProductId"><span class="oi oi-eye"></span></a></td>
                 </tr>
             }
         </tbody>
