@@ -53,11 +53,11 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Cédula</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
-                <th>Cédula</th>
-                <th>Email</th>
                 <th>Dirección</th>
+                <th>Email</th>
                 <th>Teléfono</th>
                 <th>Fecha de entrada</th>
             </tr>
@@ -68,11 +68,11 @@
             {
                 <tr>
                     <td>@client.ClientId</td>
+                    <td>@client.IdentificationNumber</td>
                     <td>@client.Name</td>
                     <td>@client.LastName</td>
-                    <td>@client.IdentificationNumber</td>
-                    <td>@client.Email</td>
                     <td>@client.Address</td>
+                    <td>@client.Email</td>
                     <td>@client.Telephone</td>
                     <td>@client.RegisterDate.ToString("dd/MM/yyy")</td>
                 </tr>
