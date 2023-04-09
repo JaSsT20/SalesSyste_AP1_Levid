@@ -237,7 +237,9 @@
         }
         if(product != null)
         {
-            sale.SalesDetails.Sum(d => d.AmountPaid);
+            detail.ProductId = product.ProductId;
+            detail.AmountPaid = product.Price;
+            detail.AmountPaid = detail.Quantity * product.Price; 
             sale.SalesDetails.Add(detail);
             detail = new SaleDetail();
         }

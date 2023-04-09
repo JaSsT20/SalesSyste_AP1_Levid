@@ -23,7 +23,6 @@ public class SaleBLL
                 {
                     product.Existence -= detail.Quantity;
                     sale.Quantity += detail.Quantity;
-                    detail.AmountPaid += product.Price * detail.Quantity;
                     sale.Total += detail.AmountPaid;
                     _context.Entry(product).State = EntityState.Modified;
                     _context.Entry(detail).State = EntityState.Added;
@@ -47,45 +46,50 @@ public class SaleBLL
     }
     private bool Modify(Sale sale)
     {
-        bool changed = false;
-        try{
-            var saleFound = Search(sale.SaleId);
-            Seller? seller = new Seller();
-            Product? product;
-            if(saleFound != null)
-            {
-                seller = _context.Sellers.SingleOrDefault(s => s.SellerId == saleFound.SellerId);
+        var oldDetail = _context.Sales.AsNoTracking().Where(o => o.SaleId== sale.SaleId)
+                .Include(o =>  o.SalesDetails)
+                .AsNoTracking()
+                .SingleOrDefault();
+        foreach (var detail in oldDetail!.SalesDetails)
+        {
+            var product = _context.Products.Find(detail.ProductId);
+            if(product!=null){
+                product.Existence += detail.Quantity;
+                sale.Total -= detail.AmountPaid;
+                var seller = _context.Sellers.Find(sale.SellerId);
                 if(seller != null)
                 {
-                    seller.TotalSold += saleFound.Quantity;
-                    _context.Sellers.Entry(seller).State = EntityState.Modified;
+                    seller.TotalSold -= detail.AmountPaid;
+                    _context.Entry(seller).State = EntityState.Modified;
                 }
+                _context.Entry(product).State = EntityState.Modified;
             }
-            _context.Database.ExecuteSqlRaw($"DELETE FROM SaleDetail WHERE SaleId = {sale.SaleId}");
-            foreach(var detail in sale.SalesDetails)
-            {
-                product = _context.Products.Find(detail.ProductId);
-                if (product != null)
-                {
-                    product.Existence -= detail.Quantity;
-                    if(saleFound != null)
-                    {
-                        saleFound.Quantity += detail.Quantity;
-                        _context.Sales.Entry(sale).State = EntityState.Modified;
-                    }
-                    detail.AmountPaid += product.Price * detail.Quantity;
-                }
-                _context.Entry(detail).State = EntityState.Added;
-            }
-            _context.Entry(sale).State = EntityState.Modified;
-            changed= _context.SaveChanges() > 0;
-            _context.Entry(sale).State = EntityState.Detached;
         }
-        catch(Exception)
+        _context.Entry(oldDetail).State = EntityState.Detached;
+        foreach (var detail in sale.SalesDetails)
         {
-            return false;
+            var product = _context.Products.Find(detail.ProductId);
+            if(product!=null){
+                product.Existence -= detail.Quantity;
+                sale.Total += detail.AmountPaid;
+                var seller = _context.Sellers.Find(sale.SellerId);
+                if(seller != null)
+                {
+                    seller.TotalSold += detail.AmountPaid;
+                }
+                _context.Entry(product).State = EntityState.Modified;
+            }
         }
-        return changed;
+        _context.Entry(oldDetail).State = EntityState.Detached;
+
+        var DetalleEliminar = _context.Set<SaleDetail>().Where(o => o.SaleId == sale.SaleId);
+        _context.Set<SaleDetail>().RemoveRange(DetalleEliminar);
+        _context.Set<SaleDetail>().AddRange(sale.SalesDetails);
+        _context.Entry(sale).State = EntityState.Modified;
+
+        bool paso = _context.SaveChanges() >0;
+        _context.Entry(sale).State = EntityState.Detached;
+        return paso; 
     }
     public bool Save(Sale Sale)
     {
