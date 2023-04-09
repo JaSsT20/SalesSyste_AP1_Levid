@@ -81,6 +81,7 @@
                 <th>Teléfono</th>
                 <th>Total vendidos</th>
                 <th>Fecha de entrada</th>
+                <th></th>
             </tr>
         </thead>
 
@@ -96,6 +97,7 @@
                     <td>@seller.Telephone</td>
                     <td class="price">$@seller.TotalSold</td>
                     <td>@seller.EntryDate.ToString("dd/MM/yyy")</td>
+                    <td><a href="/r_sellers/@seller.SellerId"><span class="oi oi-eye"></span></a></td>
                 </tr>
             }
         </tbody>
