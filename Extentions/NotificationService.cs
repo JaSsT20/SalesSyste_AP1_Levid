@@ -81,4 +81,14 @@ public static class NotificationExtensions
             }
         );
     }
+    public static void Warning(this NotificationService notificationService, string message)
+    {
+        notificationService.Notify(
+            new NotificationMessage{
+                Summary = "¡Advertencia!",
+                Detail = message,
+                Severity = NotificationSeverity.Warning
+            }
+        );
+    }
 }
