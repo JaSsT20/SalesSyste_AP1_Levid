@@ -22,6 +22,7 @@
                             <InputNumber @bind-Value='product.ProductId' class='form-control'></InputNumber>
                             <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
                         </div>
+                        <ValidationMessage For="@(() => product.ProductId)" />
                     </div>
                     <div class='col-md-6'>
                         <label>Fecha de ingreso</label>
@@ -48,12 +49,11 @@
             @* Footer *@
             <div class='card-footer'>
                 <button type='button' class='btn btn-primary'@onclick='New'><span class="oi oi-plus"/> Nuevo </button>
-                <button type='submit' class='btn btn-success'><span class="oi oi-check"/> Guardar </button>
+                <button type='submit' class='btn btn-success'@onclick="Save"><span class="oi oi-check"/> Guardar </button>
                 <button type='button' class='btn btn-danger'@onclick='Delete'><span class="oi oi-delete"/> Eliminar </button>
             </div>
         </div>
     </div>
-    <ValidationSummary/>
 </EditForm>
 
 @code{
@@ -78,7 +78,6 @@
         }
         else
         {
-            New();
             notify.NotFound();
         }
     }
@@ -102,6 +101,7 @@
     void New()
     {
         product = new Product();
+        notify.ShowNotification("Nuevo", "Un nuevo registro se ha creado y está listo para su uso.", NotificationSeverity.Info);
     }
     void Delete()
     {

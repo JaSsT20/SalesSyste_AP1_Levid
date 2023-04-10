@@ -1,6 +1,7 @@
 public class Product
 {
     [Key]
+    [Range(0, int.MaxValue, ErrorMessage = "El id debe ser mayor que cero.")]
     public int ProductId { get; set; }
     [Required(ErrorMessage = "El nombre es obligatorio.")]
     [StringLength(500, MinimumLength = 2, ErrorMessage = "El nombre debe tener dos o más dígitos.")]
