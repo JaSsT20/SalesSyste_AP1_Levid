@@ -65,7 +65,7 @@
             </div> @*End of the CARD-BODY*@
             <div class='card-footer'>
                 <button type='button' class='btn btn-primary'@onclick='New'><span class="oi oi-plus"/> Nuevo </button>
-                <button type='submit' class='btn btn-success'><span class="oi oi-check"/> Guardar </button>
+                <button type='submit' class='btn btn-success'@onclick="Save"><span class="oi oi-check"/> Guardar </button>
                 <button type='button' class='btn btn-danger'@onclick='Delete'><span class="oi oi-delete"/> Eliminar </button>
             </div>
         </div>
@@ -76,7 +76,6 @@
     [Parameter]
     public int clientId { get; set; }
     public Client client { get; set; } = new Client();
-
     protected override void OnInitialized()
     {
         if(clientId > 0)
@@ -115,8 +114,9 @@
         }
     }
     void New()
-    {
+    {   
         client = new Client();
+        notify.ShowNotification("Nuevo", "Un nuevo registro se ha creado y está listo para su uso.", NotificationSeverity.Info);
     }
     void Delete()
     {
@@ -127,39 +127,37 @@
         }
         else
         {
-            notify.Wrong("No se ha podido eliminar este cliente.");
+            notify.Warning("Es necesario que exista un registro previo antes de proceder a su eliminación.");
         }
     }
     bool Validate()
     {
         if(client.ClientId < 0)
         {
-            notify.Wrong("El id no puede ser menor que cero.");
+            return false;
+        }
+        if(string.IsNullOrEmpty(client.IdentificationNumber))
+        {
             return false;
         }
         if(string.IsNullOrEmpty(client.Name))
         {
-            notify.Wrong("Debe llenar el campo NOMBRE");
             return false;
         }
         if(string.IsNullOrEmpty(client.Address))
         {
-            notify.Wrong("Debe llenar el campo DIRECCIÓN");
             return false;
         }
         if(string.IsNullOrEmpty(client.Telephone))
         {
-            notify.Wrong("Debe llenar el campo TELÉFONO");
             return false;
         }
         if(string.IsNullOrEmpty(client.LastName))
         {
-            notify.Wrong("Debe llenar el campo APELLIDO");
             return false;
         }
         if(string.IsNullOrEmpty(client.Email))
         {
-            notify.Wrong("Debe llenar el campo EMAIL");
             return false;
         }
         else
