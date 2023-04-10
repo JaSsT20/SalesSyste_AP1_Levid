@@ -17,12 +17,19 @@
             </div>
             @* BodyCard *@
             <div class="card-body">
-                <label class="form-label">Venta Id</label>
-                <label id="datelbl" class="form-label">Fecha</label>
-                <div id="search-id"> @*Buscar y ID*@
-                    <InputNumber @bind-Value="sale.SaleId" class="form-control"></InputNumber>
-                    <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
-                    <InputDate @bind-Value="sale.SaleDate" class="form-control" id="date"></InputDate>
+                <div class='row'>
+                    <div class='col-md-6'>
+                        <label class="form-label">Venta Id</label>
+                        <div id="search-id">
+                            <InputNumber @bind-Value="sale.SaleId" class="form-control"></InputNumber>
+                            <button type="button" class="btn btn-info oi oi-magnifying-glass" @onclick="Search"></button>
+                        </div>
+                            <ValidationMessage For="@(() => sale.SaleId)" />
+                    </div>
+                    <div class='col-md-6'>
+                        <label>Fecha</label>
+                        <InputDate @bind-Value='sale.SaleDate' class='form-control'></InputDate>
+                    </div>
                 </div>
                 <div class="row">
                     @* Cliente *@
@@ -120,7 +127,8 @@
     </div>
 </EditForm>
 
-@code{
+@code
+{
     [Parameter]
     public int saleId { get; set; }
     private Sale sale { get; set; } = new Sale();
@@ -142,14 +150,19 @@
     void Search()
     {
         var saleFound = SaleBLL.Search(sale.SaleId);
-        if(saleFound != null)
+        if(saleFound != null && saleFound.SaleId > 0)
         {
             sale = saleFound;
-            @* notification.Info(); *@
+            notify.DataFound();
         }
         else
         {
-            notify.ShowNotification("No encontrado", "Ese id no se ha registrado.", NotificationSeverity.Warning);
+            if(sale.SaleId <= 0)
+            {
+                notify.Warning($"No se puede buscar datos de un Id negativo o en cero.");
+                return;
+            }
+            notify.Warning($"No se han encontrado datos para el Id {sale.SaleId}");
         } 
     }
     void Save()
@@ -158,7 +171,6 @@
             sale.Concept = "-";
         if(!Validate())
         {
-            notify.Info("Validacion", "Algo falta.");
             return;
         }
         if(SaleBLL.Save(sale))
@@ -168,14 +180,14 @@
         }
         else
         {
-            notify.ShowNotification("Error", "Revise que todos los campos esten llenos.", NotificationSeverity.Error);  
+            notify.Wrong("Es posible que falten datos por llenar o haya ocurrido una excepción no controlada, por favor refresque la página."); 
         }
     }
     void New()
     {
         sale = new Sale();
         detail = new SaleDetail();
-        notify.ShowNotification("Nuevo", "El registro esta listo.", NotificationSeverity.Info);
+        notify.ShowNotification("Nuevo", "Un nuevo registro se ha creado y está listo para su uso.", NotificationSeverity.Info);
     }
     void Delete()
     {
@@ -186,7 +198,7 @@
         }
         else
         {
-            notify.Wrong();
+            notify.Warning("Es necesario que exista un registro previo antes de proceder a su eliminación.");
         }
     }
     bool Validate()
@@ -198,17 +210,22 @@
         }
         if(sale.ClientId <= 0)
         {
-            notify.Wrong("Debe seleccionar un cliente.");
+            notify.Warning("Debe seleccionar un cliente.");
             return false;
         }
         if(sale.SellerId <= 0)
         {
-            notify.Wrong("Debe seleccionar un vendedor.");
+            notify.Warning("Debe seleccionar un vendedor.");
+            return false;
+        }
+        if(detail.ProductId <= 0 && sale.SalesDetails.Count <= 0)
+        {
+            notify.Warning("Debe seleccionar un producto de las opciones.");
             return false;
         }
         if(sale.SalesDetails.Count <= 0)
         {
-            notify.Wrong("Debe agregar al menos un producto.");
+            notify.Warning("Debe agregar al menos un producto al detalle.");
             return false;
         }
         else
@@ -225,8 +242,13 @@
     @* Detail functions *@
     void AddDetail()
     {
+        if(detail.ProductId <= 0)
+        {
+            notify.Warning("Debe seleccionar un producto antes de agregarlo al detalle.");
+            return;
+        }
         if(detail.Quantity <= 0){
-            notify.ShowNotification("Error", "La cantidad debe ser mayor que cero.", NotificationSeverity.Warning);
+            notify.Warning("La cantidad del producto debe ser mayor que cero.");
                 return;
         }
         var product = ProductsBLL.Search(detail.ProductId);

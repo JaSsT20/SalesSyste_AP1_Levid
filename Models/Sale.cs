@@ -1,6 +1,7 @@
 public class Sale
 {
     [Key]
+    [Range(0, int.MaxValue, ErrorMessage = "El id debe ser mayor que cero.")]
     public int SaleId { get; set; }
     [Range(1, int.MaxValue, ErrorMessage = "El ID debe ser válido.")]
     [ForeignKey("ClientId")]
