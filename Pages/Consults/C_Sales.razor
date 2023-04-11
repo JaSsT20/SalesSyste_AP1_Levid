@@ -71,6 +71,9 @@
 
 <div class="card-body">
     <table class="table table-hover">
+        <caption class="caption-top">
+            Total en ventas: <span class="price">$@(Results.Sum(sale => sale.Total))</span>
+        </caption>
         <thead>
             <tr>
                 <th>Id</th>
