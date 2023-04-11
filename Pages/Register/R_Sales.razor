@@ -81,6 +81,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                                @(@product = SearchProduct(detail.ProductId))
+                                <label>Precio</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">$</span>
+                                    <InputNumber @bind-Value='product.Price' class='form-control' readonly></InputNumber>
+                                    <span class="input-group-text">.00</span>
+                                </div>
+                        </div>
                     </div>
                     <table class='table table-sm'>
                         <thead>
@@ -136,6 +145,7 @@
     public List<Product> ProductList { get; set; } = new List<Product>();
     public List<Client> ClientList { get; set; } = new List<Client>();
     public List<Seller> SellerList { get; set; } = new List<Seller>();
+    public Product product { get; set; } = new Product();
     protected override void OnInitialized()
     {
         if(saleId > 0)
