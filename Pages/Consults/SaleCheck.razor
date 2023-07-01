@@ -5,43 +5,61 @@
 @inject SellerBLL SellerBLL
 @layout SaleCheckLayout
 @inject IJSRuntime JSRuntime
+<head>
+    <title>Thanks for buying!!</title>
+</head>
 
-<div class='card'>
-    <div class='card-header'>
-        <h3>Factura - LeviShop</h3>
-        <h6>Le atendió: @seller.Name @seller.LastName</h6>
-        <h6>Fecha: @sale.SaleDate.ToString("dd/MM/yyyy")</h6>
-    </div>
+<div class="container">
+    <div class='card'>
+        <div class='card-header'>
+            <div class='row'>
+                <div class='col-md-3'>
+                    <img id="mugSaleCheck" src="/imgs/Taza.png" alt="MyLogo">
+                </div>
+                <div class='col-md-9'>
+                    <h3 id="saleCheckTitle">Factura - LeviShop</h3>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-6'>
+                    <h6>Le atendió: <span class="infoCheck">@seller.Name @seller.LastName</span></h6>
+                </div>
+                <div class='col-md-6'>
+                    <h6>Fecha: <span class="infoCheck">@sale.SaleDate.ToString("dd/MM/yyyy")</span></h6>
+                </div>
+            </div>
+        </div>
 
-    <div class='card-body'>
-        <table class='table'>
-            <thead>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>SubTotal</th>
-            </thead>
-            <tbody>
-                @foreach(var Item in sale.SalesDetails)
-                {
-                    var prod = SearchProduct(Item.ProductId);
-                    <tr>
-                        <td>@prod.Description</td>
-                        <td>@Item.Quantity</td>
-                        <td class="price">RD$@prod.Price</td>
-                        <td class="price">RD$@Item.AmountPaid</td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot>
-                <td colspan='4'>
-                    <h5 class="text-right">Total: <span class="price">RD$@sale.SalesDetails.Sum(d=> d.AmountPaid)</span></h5>
-                </td>
-            </tfoot>
-        </table>
-    </div>
-    <div class='card-footer'>
-        <button type="button" class="btn btn-primary" @onclick="PrintSaleCheck"> Imprimir</button>
+        <div class='card-body'>
+            <table class='table'>
+                <thead>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>SubTotal</th>
+                </thead>
+                <tbody>
+                    @foreach(var Item in sale.SalesDetails)
+                    {
+                        var prod = SearchProduct(Item.ProductId);
+                        <tr>
+                            <td>@prod.Description</td>
+                            <td>@Item.Quantity</td>
+                            <td class="price">RD$@prod.Price</td>
+                            <td class="price">RD$@Item.AmountPaid</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <td colspan='4'>
+                        <h5 class="text-right">Total: <span class="price">RD$@sale.SalesDetails.Sum(d=> d.AmountPaid)</span></h5>
+                    </td>
+                </tfoot>
+            </table>
+        </div>
+        <div class='card-footer'>
+            <button type="button" class="btn btn-primary" @onclick="PrintSaleCheck"> Imprimir</button>
+        </div>
     </div>
 </div>
 
