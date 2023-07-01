@@ -84,6 +84,7 @@
                 <th>Total</th>
                 <th>Fecha</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
 
@@ -99,6 +100,7 @@
                     <td class="price">$@sale.Total</td>
                     <td>@sale.SaleDate.ToString("dd/MM/yyy")</td>
                     <td><a href="/r_sales/@sale.SaleId"><span class="oi oi-eye"></span></a></td>
+                    <td><a href="/SaleCheck/@sale.SaleId" target="_blank"><span class="oi oi-print"></span></a></td>
                 </tr>
                 <table class="table table-sm">
                     <thead>
