@@ -1,0 +1,88 @@
+@page "/SaleCheck"
+@page "/SaleCheck/{saleId:int}"
+@inject SaleBLL SaleBLL
+@inject ProductsBLL ProductsBLL
+@inject SellerBLL SellerBLL
+@layout SaleCheckLayout
+@inject IJSRuntime JSRuntime
+
+<div class='card'>
+    <div class='card-header'>
+        <h3>Factura - LeviShop</h3>
+        <h6>Le atendió: @seller.Name @seller.LastName</h6>
+        <h6>Fecha: @sale.SaleDate.ToString("dd/MM/yyyy")</h6>
+    </div>
+
+    <div class='card-body'>
+        <table class='table'>
+            <thead>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>SubTotal</th>
+            </thead>
+            <tbody>
+                @foreach(var Item in sale.SalesDetails)
+                {
+                    var prod = SearchProduct(Item.ProductId);
+                    <tr>
+                        <td>@prod.Description</td>
+                        <td>@Item.Quantity</td>
+                        <td class="price">RD$@prod.Price</td>
+                        <td class="price">RD$@Item.AmountPaid</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <td colspan='4'>
+                    <h5 class="text-right">Total: <span class="price">RD$@sale.SalesDetails.Sum(d=> d.AmountPaid)</span></h5>
+                </td>
+            </tfoot>
+        </table>
+    </div>
+    <div class='card-footer'>
+        <button type="button" class="btn btn-primary" @onclick="PrintSaleCheck"> Imprimir</button>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public int saleId { get; set; }
+    public Sale sale { get; set; } = new Sale();
+    public Seller seller { get; set; } = new Seller();
+
+    protected override void OnInitialized()
+    {
+        Search(saleId);
+    }
+    private void Search(int saleId)
+    {
+        var saleFound = SaleBLL.Search(saleId);
+        if(saleFound != null)
+        {
+            sale = saleFound;
+            seller = SearchSeller(sale.SellerId);
+        }
+    }
+
+    private Product SearchProduct(int productId)
+    {
+        Product prod = new Product();
+        var prodFound = ProductsBLL.Search(productId);
+        if(prodFound != null)
+            return prod = prodFound;
+        return new Product();
+    }
+    private Seller SearchSeller(int SellerId)
+    {
+        var sellerFound = SellerBLL.Search(SellerId);
+        if(sellerFound != null)
+            return sellerFound;
+        return new Seller();
+    }
+    private async Task PrintSaleCheck()
+    {
+        await JSRuntime.InvokeVoidAsync("print");
+    }
+}
