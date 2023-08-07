@@ -1,5 +1,5 @@
 # Sales system
-
+![](https://levishop.azurewebsites.net)
 ![](https://raw.githubusercontent.com/JaSsT20/SalesSyste_AP1_Levid/main/Extras/LogoSmall.jpg)
 
 Sales system, traducido al español **"Sistema de ventas"** es un sistema de ventas desarrollado en [blazor server](httphttps://learn.microsoft.com/es-es/aspnet/core/blazor/hosting-models?view=aspnetcore-7.0#blazor-server:// "blazor server") el usuario puede registrarse en el sistema y una vez registrado, podrá iniciar sesión permitiendole así registrar las ventas, de igual manera podrá registrar clientes habituales, productos, vendedores y por supuesto, las ventas que realizan, el sistema también le permite al usuario realizar consultas de todo lo ya mencionado y registrado en el sistema.
