@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalesSystem_AP1_Levid", "SalesSystem_AP1_Levid.csproj", "{F69B1C54-DA07-4786-9542-DC4812C11E2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F69B1C54-DA07-4786-9542-DC4812C11E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F69B1C54-DA07-4786-9542-DC4812C11E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F69B1C54-DA07-4786-9542-DC4812C11E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F69B1C54-DA07-4786-9542-DC4812C11E2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3288F2EE-B521-4AC4-BFC9-098554590E89}
+	EndGlobalSection
+EndGlobal
